@@ -1,9 +1,13 @@
 <?php
 
-class HomeController
+require_once __DIR__ . '/../../core/Controller.php';
+
+class HomeController extends Controller
 {
     public function index(): void
     {
-        require __DIR__ . '/../views/home/index.php';
+        $this->render('home/index', [
+            'title' => 'Inicio - ReparaYa'
+        ]);
     }
 }
