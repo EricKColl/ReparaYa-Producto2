@@ -17,16 +17,32 @@ class Router
             $controller->index();
             return;
         }
-                if ($path === '/public/usuarios/create' || $path === '/public/usuarios/create/') {
+
+        if ($path === '/public/usuarios/create' || $path === '/public/usuarios/create/') {
             require_once __DIR__ . '/../app/controllers/UsuarioController.php';
             $controller = new UsuarioController();
             $controller->create();
             return;
         }
+
         if ($path === '/public/usuarios/store' && $_SERVER['REQUEST_METHOD'] === 'POST') {
             require_once __DIR__ . '/../app/controllers/UsuarioController.php';
             $controller = new UsuarioController();
             $controller->store();
+            return;
+        }
+
+        if ($path === '/public/usuarios/edit' || $path === '/public/usuarios/edit/') {
+            require_once __DIR__ . '/../app/controllers/UsuarioController.php';
+            $controller = new UsuarioController();
+            $controller->edit();
+            return;
+        }
+
+        if ($path === '/public/usuarios/update' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+            require_once __DIR__ . '/../app/controllers/UsuarioController.php';
+            $controller = new UsuarioController();
+            $controller->update();
             return;
         }
 

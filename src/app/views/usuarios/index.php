@@ -1,5 +1,7 @@
 <h2>Listado de usuarios</h2>
 
+<p><a href="/public/usuarios/create">Crear nuevo usuario</a></p>
+
 <?php if (empty($usuarios)): ?>
     <p>No hay usuarios registrados.</p>
 <?php else: ?>
@@ -12,6 +14,7 @@
                 <th>Rol</th>
                 <th>Teléfono</th>
                 <th>Fecha de creación</th>
+                <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
@@ -22,7 +25,10 @@
                     <td><?= htmlspecialchars($usuario['email']) ?></td>
                     <td><?= htmlspecialchars($usuario['rol']) ?></td>
                     <td><?= htmlspecialchars($usuario['telefono'] ?? '') ?></td>
-                    <td><?= htmlspecialchars($usuario['created_at'] ?? '') ?></td>
+                    <td><?= htmlspecialchars($usuario['created_at']) ?></td>
+                    <td>
+                        <a href="/public/usuarios/edit?id=<?= urlencode($usuario['id']) ?>">Editar</a>
+                    </td>
                 </tr>
             <?php endforeach; ?>
         </tbody>
