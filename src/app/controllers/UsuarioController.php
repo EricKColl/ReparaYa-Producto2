@@ -98,4 +98,25 @@ class UsuarioController extends Controller
         header('Location: /public/usuarios');
         exit;
     }
+
+    public function delete(): void
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: /public/usuarios');
+            exit;
+        }
+
+        $id = isset($_POST['id']) ? (int) $_POST['id'] : 0;
+
+        if ($id <= 0) {
+            header('Location: /public/usuarios');
+            exit;
+        }
+
+        $usuarioModel = new Usuario();
+        $usuarioModel->delete($id);
+
+        header('Location: /public/usuarios');
+        exit;
+    }
 }

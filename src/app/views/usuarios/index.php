@@ -28,6 +28,13 @@
                     <td><?= htmlspecialchars($usuario['created_at']) ?></td>
                     <td>
                         <a href="/public/usuarios/edit?id=<?= urlencode($usuario['id']) ?>">Editar</a>
+
+                        <form action="/public/usuarios/delete" method="POST" style="display:inline;">
+                            <input type="hidden" name="id" value="<?= htmlspecialchars($usuario['id']) ?>">
+                            <button type="submit" onclick="return confirm('¿Seguro que quieres eliminar este usuario?');">
+                                Eliminar
+                            </button>
+                        </form>
                     </td>
                 </tr>
             <?php endforeach; ?>

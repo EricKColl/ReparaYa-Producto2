@@ -46,6 +46,13 @@ class Router
             return;
         }
 
+        if ($path === '/public/usuarios/delete' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+            require_once __DIR__ . '/../app/controllers/UsuarioController.php';
+            $controller = new UsuarioController();
+            $controller->delete();
+            return;
+        }
+
         http_response_code(404);
         require __DIR__ . '/../app/views/errors/404.php';
     }
