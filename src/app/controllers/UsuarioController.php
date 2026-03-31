@@ -15,4 +15,34 @@ class UsuarioController extends Controller
             'usuarios' => $usuarios
         ]);
     }
+
+    public function create(): void
+    {
+        $this->render('usuarios/create', [
+            'title' => 'Crear usuario - ReparaYa'
+        ]);
+    }
+
+    public function store(): void
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: /public/usuarios');
+            exit;
+        }
+
+        $usuarioModel = new Usuario();
+
+        $data = [
+            'nombre' => trim($_POST['nombre'] ?? ''),
+            'email' => trim($_POST['email'] ?? ''),
+            'password' => trim($_POST['password'] ?? ''),
+            'rol' => $_POST['rol'] ?? 'particular',
+            'telefono' => trim($_POST['telefono'] ?? '')
+        ];
+
+        $usuarioModel->create($data);
+
+        header('Location: /public/usuarios');
+        exit;
+    }
 }
