@@ -40,6 +40,25 @@ class UsuarioController extends Controller
             'telefono' => trim($_POST['telefono'] ?? '')
         ];
 
+        if ($data['nombre'] === '' || $data['email'] === '' || $data['password'] === '') {
+            header('Location: /public/usuarios/create?error=campos_vacios');
+            exit;
+        }
+
+        if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+            header('Location: /public/usuarios/create?error=email_invalido');
+            exit;
+        }
+
+        $emailExistente = $usuarioModel->getByEmail($data['email']);
+
+        if ($emailExistente) {
+            header('Location: /public/usuarios/create?error=email_duplicado');
+            exit;
+        }
+
+        $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
+
         $usuarioModel->create($data);
 
         header('Location: /public/usuarios');
