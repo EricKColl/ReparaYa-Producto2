@@ -11,6 +11,13 @@ class Router
             return;
         }
 
+        if ($path === '/public/especialidades') {
+            require_once __DIR__ . '/../app/controllers/EspecialidadController.php';
+            $controller = new EspecialidadController();
+            $controller->index();
+            return;
+        }
+
         http_response_code(404);
         require __DIR__ . '/../app/views/errors/404.php';
     }
