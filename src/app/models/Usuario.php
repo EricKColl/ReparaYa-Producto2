@@ -57,6 +57,20 @@ class Usuario extends Model
         return $usuario ?: null;
     }
 
+    public function getByEmailExcludingId(string $email, int $id): ?array
+    {
+        $sql = "SELECT * FROM usuarios WHERE email = :email AND id != :id LIMIT 1";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([
+            'email' => $email,
+            'id' => $id
+        ]);
+
+        $usuario = $stmt->fetch();
+
+        return $usuario ?: null;
+    }
+
     public function create(array $data): bool
     {
         $sql = "INSERT INTO usuarios (nombre, email, password, rol, telefono)

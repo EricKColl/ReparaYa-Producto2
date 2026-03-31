@@ -103,6 +103,12 @@ class UsuarioController extends Controller
         }
 
         $usuarioModel = new Usuario();
+        $usuarioActual = $usuarioModel->getById($id);
+
+        if (!$usuarioActual) {
+            header('Location: /public/usuarios');
+            exit;
+        }
 
         $data = [
             'nombre' => trim($_POST['nombre'] ?? ''),
@@ -111,6 +117,29 @@ class UsuarioController extends Controller
             'rol' => $_POST['rol'] ?? 'particular',
             'telefono' => trim($_POST['telefono'] ?? '')
         ];
+
+        if ($data['nombre'] === '' || $data['email'] === '') {
+            header('Location: /public/usuarios/edit?id=' . $id . '&error=campos_vacios');
+            exit;
+        }
+
+        if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+            header('Location: /public/usuarios/edit?id=' . $id . '&error=email_invalido');
+            exit;
+        }
+
+        $emailExistente = $usuarioModel->getByEmailExcludingId($data['email'], $id);
+
+        if ($emailExistente) {
+            header('Location: /public/usuarios/edit?id=' . $id . '&error=email_duplicado');
+            exit;
+        }
+
+        if ($data['password'] === '') {
+            $data['password'] = $usuarioActual['password'];
+        } else {
+            $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
+        }
 
         $usuarioModel->update($id, $data);
 

@@ -1,6 +1,18 @@
 <h2>Editar usuario</h2>
 
-<form action="/public/usuarios/update" method="POST">
+<?php if (isset($_GET['error'])): ?>
+    <div style="color: red; margin-bottom: 15px;">
+        <?php if ($_GET['error'] === 'campos_vacios'): ?>
+            <p>Debes rellenar los campos obligatorios.</p>
+        <?php elseif ($_GET['error'] === 'email_invalido'): ?>
+            <p>El formato del email no es válido.</p>
+        <?php elseif ($_GET['error'] === 'email_duplicado'): ?>
+            <p>Ya existe otro usuario registrado con ese email.</p>
+        <?php endif; ?>
+    </div>
+<?php endif; ?>
+
+<form action="/public/usuarios/update" method="POST" autocomplete="off">
     <input type="hidden" name="id" value="<?= htmlspecialchars($usuario['id']) ?>">
 
     <div>
@@ -12,14 +24,15 @@
 
     <div>
         <label for="email">Email:</label><br>
-        <input type="email" id="email" name="email" value="<?= htmlspecialchars($usuario['email']) ?>" required>
+        <input type="email" id="email" name="email" value="<?= htmlspecialchars($usuario['email']) ?>" required autocomplete="off">
     </div>
 
     <br>
 
     <div>
-        <label for="password">Contraseña:</label><br>
-        <input type="text" id="password" name="password" value="<?= htmlspecialchars($usuario['password']) ?>" required>
+        <label for="password">Nueva contraseña:</label><br>
+        <input type="password" id="password" name="password" value="" autocomplete="new-password">
+        <p style="margin: 5px 0 0 0; font-size: 14px;">Déjalo vacío si no quieres cambiar la contraseña.</p>
     </div>
 
     <br>
