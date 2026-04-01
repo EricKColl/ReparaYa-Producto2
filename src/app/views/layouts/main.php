@@ -17,14 +17,19 @@ $usuarioSesion = $_SESSION['usuario'] ?? null;
         <h1><?= $appConfig['name'] ?></h1>
 
         <nav style="margin-bottom: 15px;">
-            <a href="/public">Inicio</a> |
-            <a href="/public/usuarios">Usuarios</a> |
+            <a href="/public">Inicio</a>
 
             <?php if ($usuarioSesion): ?>
-                <span>Hola, <?= htmlspecialchars($usuarioSesion['nombre']) ?></span> |
-                <a href="/public/logout">Cerrar sesión</a>
+                | <a href="/public/perfil">Mi perfil</a>
+
+                <?php if (($usuarioSesion['rol'] ?? '') === 'admin'): ?>
+                    | <a href="/public/usuarios">Usuarios</a>
+                <?php endif; ?>
+
+                | <span>Hola, <?= htmlspecialchars($usuarioSesion['nombre']) ?></span>
+                | <a href="/public/logout">Cerrar sesión</a>
             <?php else: ?>
-                <a href="/public/login">Iniciar sesión</a>
+                | <a href="/public/login">Iniciar sesión</a>
             <?php endif; ?>
         </nav>
 

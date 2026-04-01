@@ -13,6 +13,16 @@ class UsuarioController extends Controller
         }
     }
 
+    private function requireAdmin(): void
+    {
+        $this->requireLogin();
+
+        if (($_SESSION['usuario']['rol'] ?? '') !== 'admin') {
+            header('Location: /public');
+            exit;
+        }
+    }
+
     private function redirectIfLoggedIn(): void
     {
         if (isset($_SESSION['usuario'])) {
@@ -23,7 +33,7 @@ class UsuarioController extends Controller
 
     public function index(): void
     {
-        $this->requireLogin();
+        $this->requireAdmin();
 
         $usuarioModel = new Usuario();
         $usuarios = $usuarioModel->getAll();
@@ -36,7 +46,7 @@ class UsuarioController extends Controller
 
     public function create(): void
     {
-        $this->requireLogin();
+        $this->requireAdmin();
 
         $this->render('usuarios/create', [
             'title' => 'Crear usuario - ReparaYa'
@@ -45,7 +55,7 @@ class UsuarioController extends Controller
 
     public function store(): void
     {
-        $this->requireLogin();
+        $this->requireAdmin();
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: /public/usuarios');
@@ -89,7 +99,7 @@ class UsuarioController extends Controller
 
     public function edit(): void
     {
-        $this->requireLogin();
+        $this->requireAdmin();
 
         $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 
@@ -114,7 +124,7 @@ class UsuarioController extends Controller
 
     public function update(): void
     {
-        $this->requireLogin();
+        $this->requireAdmin();
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: /public/usuarios');
@@ -175,7 +185,7 @@ class UsuarioController extends Controller
 
     public function delete(): void
     {
-        $this->requireLogin();
+        $this->requireAdmin();
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: /public/usuarios');
