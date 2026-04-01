@@ -32,6 +32,20 @@ class Router
             return;
         }
 
+        if ($path === '/public/perfil' && $_SERVER['REQUEST_METHOD'] === 'GET') {
+            require_once __DIR__ . '/../app/controllers/UsuarioController.php';
+            $controller = new UsuarioController();
+            $controller->profile();
+            return;
+        }
+
+        if ($path === '/public/perfil/update' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+            require_once __DIR__ . '/../app/controllers/UsuarioController.php';
+            $controller = new UsuarioController();
+            $controller->updateProfile();
+            return;
+        }
+
         if ($path === '/public/usuarios' || $path === '/public/usuarios/') {
             require_once __DIR__ . '/../app/controllers/UsuarioController.php';
             $controller = new UsuarioController();

@@ -249,4 +249,81 @@ class UsuarioController extends Controller
         header('Location: /public/login');
         exit;
     }
+
+    public function profile(): void
+    {
+        $this->requireLogin();
+
+        $usuarioModel = new Usuario();
+        $usuario = $usuarioModel->getById((int) $_SESSION['usuario']['id']);
+
+        if (!$usuario) {
+            header('Location: /public/logout');
+            exit;
+        }
+
+        $this->render('usuarios/profile', [
+            'title' => 'Mi perfil - ReparaYa',
+            'usuario' => $usuario
+        ]);
+    }
+
+    public function updateProfile(): void
+    {
+        $this->requireLogin();
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: /public/perfil');
+            exit;
+        }
+
+        $id = (int) $_SESSION['usuario']['id'];
+
+        $usuarioModel = new Usuario();
+        $usuarioActual = $usuarioModel->getById($id);
+
+        if (!$usuarioActual) {
+            header('Location: /public/logout');
+            exit;
+        }
+
+        $data = [
+            'nombre' => trim($_POST['nombre'] ?? ''),
+            'email' => trim($_POST['email'] ?? ''),
+            'password' => trim($_POST['password'] ?? ''),
+            'rol' => $usuarioActual['rol'],
+            'telefono' => trim($_POST['telefono'] ?? '')
+        ];
+
+        if ($data['nombre'] === '' || $data['email'] === '') {
+            header('Location: /public/perfil?error=campos_vacios');
+            exit;
+        }
+
+        if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+            header('Location: /public/perfil?error=email_invalido');
+            exit;
+        }
+
+        $emailExistente = $usuarioModel->getByEmailExcludingId($data['email'], $id);
+
+        if ($emailExistente) {
+            header('Location: /public/perfil?error=email_duplicado');
+            exit;
+        }
+
+        if ($data['password'] === '') {
+            $data['password'] = $usuarioActual['password'];
+        } else {
+            $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
+        }
+
+        $usuarioModel->update($id, $data);
+
+        $_SESSION['usuario']['nombre'] = $data['nombre'];
+        $_SESSION['usuario']['email'] = $data['email'];
+
+        header('Location: /public/perfil?ok=perfil_actualizado');
+        exit;
+    }
 }
