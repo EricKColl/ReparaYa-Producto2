@@ -1,6 +1,10 @@
 <?php
+
 $appConfig = require __DIR__ . '/../../../config/app.php';
+
+$usuarioSesion = $_SESSION['usuario'] ?? null;
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -11,6 +15,25 @@ $appConfig = require __DIR__ . '/../../../config/app.php';
 <body>
     <header>
         <h1><?= $appConfig['name'] ?></h1>
+
+        <nav style="margin-bottom: 15px;">
+            <a href="/public">Inicio</a>
+
+            <?php if ($usuarioSesion): ?>
+                | <a href="/public/perfil">Mi perfil</a>
+
+                <?php if (($usuarioSesion['rol'] ?? '') === 'admin'): ?>
+                    | <a href="/public/usuarios">Usuarios</a>
+                <?php endif; ?>
+
+                | <span>Hola, <?= htmlspecialchars($usuarioSesion['nombre']) ?></span>
+                | <a href="/public/logout">Cerrar sesión</a>
+            <?php else: ?>
+                | <a href="/public/login">Iniciar sesión</a>
+                | <a href="/public/register">Registrarse</a>
+            <?php endif; ?>
+        </nav>
+
         <hr>
     </header>
 
