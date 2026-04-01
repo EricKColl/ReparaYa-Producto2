@@ -5,8 +5,26 @@ require_once __DIR__ . '/../models/Usuario.php';
 
 class UsuarioController extends Controller
 {
+    private function requireLogin(): void
+    {
+        if (!isset($_SESSION['usuario'])) {
+            header('Location: /public/login');
+            exit;
+        }
+    }
+
+    private function redirectIfLoggedIn(): void
+    {
+        if (isset($_SESSION['usuario'])) {
+            header('Location: /public');
+            exit;
+        }
+    }
+
     public function index(): void
     {
+        $this->requireLogin();
+
         $usuarioModel = new Usuario();
         $usuarios = $usuarioModel->getAll();
 
@@ -18,6 +36,8 @@ class UsuarioController extends Controller
 
     public function create(): void
     {
+        $this->requireLogin();
+
         $this->render('usuarios/create', [
             'title' => 'Crear usuario - ReparaYa'
         ]);
@@ -25,6 +45,8 @@ class UsuarioController extends Controller
 
     public function store(): void
     {
+        $this->requireLogin();
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: /public/usuarios');
             exit;
@@ -67,6 +89,8 @@ class UsuarioController extends Controller
 
     public function edit(): void
     {
+        $this->requireLogin();
+
         $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 
         if ($id <= 0) {
@@ -90,6 +114,8 @@ class UsuarioController extends Controller
 
     public function update(): void
     {
+        $this->requireLogin();
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: /public/usuarios');
             exit;
@@ -149,6 +175,8 @@ class UsuarioController extends Controller
 
     public function delete(): void
     {
+        $this->requireLogin();
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: /public/usuarios');
             exit;
@@ -165,6 +193,60 @@ class UsuarioController extends Controller
         $usuarioModel->delete($id);
 
         header('Location: /public/usuarios');
+        exit;
+    }
+
+    public function loginForm(): void
+    {
+        $this->redirectIfLoggedIn();
+
+        $this->render('auth/login', [
+            'title' => 'Iniciar sesión - ReparaYa'
+        ]);
+    }
+
+    public function login(): void
+    {
+        $this->redirectIfLoggedIn();
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: /public/login');
+            exit;
+        }
+
+        $email = trim($_POST['email'] ?? '');
+        $password = trim($_POST['password'] ?? '');
+
+        if ($email === '' || $password === '') {
+            header('Location: /public/login?error=campos_vacios');
+            exit;
+        }
+
+        $usuarioModel = new Usuario();
+        $usuario = $usuarioModel->getByEmail($email);
+
+        if (!$usuario || !password_verify($password, $usuario['password'])) {
+            header('Location: /public/login?error=credenciales_invalidas');
+            exit;
+        }
+
+        $_SESSION['usuario'] = [
+            'id' => $usuario['id'],
+            'nombre' => $usuario['nombre'],
+            'email' => $usuario['email'],
+            'rol' => $usuario['rol']
+        ];
+
+        header('Location: /public');
+        exit;
+    }
+
+    public function logout(): void
+    {
+        unset($_SESSION['usuario']);
+        session_destroy();
+
+        header('Location: /public/login');
         exit;
     }
 }
