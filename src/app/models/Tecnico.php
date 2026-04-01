@@ -70,12 +70,53 @@ class Tecnico extends Model
     public function delete(int $id): bool
     {
         $stmt = $this->db->prepare("
-         DELETE FROM tecnicos
-         WHERE id = :id
+            DELETE FROM tecnicos
+            WHERE id = :id
         ");
 
         return $stmt->execute([
             'id' => $id
         ]);
+    }
+
+    public function getDisponibles(): array
+    {
+        $stmt = $this->db->query("
+            SELECT 
+                t.id,
+                t.nombre_completo,
+                t.especialidad_id,
+                t.disponible,
+                e.nombre_especialidad
+            FROM tecnicos t
+            LEFT JOIN especialidades e ON t.especialidad_id = e.id
+            WHERE t.disponible = 1
+            ORDER BY t.nombre_completo ASC
+        ");
+
+        return $stmt->fetchAll();
+    }
+
+    public function getDisponiblesByEspecialidad(int $especialidadId): array
+    {
+        $stmt = $this->db->prepare("
+            SELECT 
+                t.id,
+                t.nombre_completo,
+                t.especialidad_id,
+                t.disponible,
+                e.nombre_especialidad
+            FROM tecnicos t
+            LEFT JOIN especialidades e ON t.especialidad_id = e.id
+            WHERE t.disponible = 1
+              AND t.especialidad_id = :especialidad_id
+            ORDER BY t.nombre_completo ASC
+        ");
+
+        $stmt->execute([
+            'especialidad_id' => $especialidadId
+        ]);
+
+        return $stmt->fetchAll();
     }
 }
