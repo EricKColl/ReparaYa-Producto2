@@ -30,4 +30,5 @@
 
 <br>
 
-<a href="/public">Volver al inicio</a>
+<p><a href="/public/register">¿No tienes cuenta? Regístrate aquí</a></p>
+<p><a href="/public">Volver al inicio</a></p>

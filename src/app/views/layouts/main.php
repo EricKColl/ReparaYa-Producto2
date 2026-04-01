@@ -30,6 +30,7 @@ $usuarioSesion = $_SESSION['usuario'] ?? null;
                 | <a href="/public/logout">Cerrar sesión</a>
             <?php else: ?>
                 | <a href="/public/login">Iniciar sesión</a>
+                | <a href="/public/register">Registrarse</a>
             <?php endif; ?>
         </nav>
 
