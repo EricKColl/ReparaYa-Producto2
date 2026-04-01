@@ -18,6 +18,40 @@ class Router
             return;
         }
 
+        if ($path === '/public/especialidades/create') {
+            require_once __DIR__ . '/../app/controllers/EspecialidadController.php';
+            $controller = new EspecialidadController();
+            $controller->create();
+            return;
+        }
+
+        if ($path === '/public/especialidades/store') {
+            require_once __DIR__ . '/../app/controllers/EspecialidadController.php';
+            $controller = new EspecialidadController();
+            $controller->store();
+            return;
+        }
+
+        if ($path === '/public/especialidades/edit') {
+            require_once __DIR__ . '/../app/controllers/EspecialidadController.php';
+            $controller = new EspecialidadController();
+            $controller->edit();
+            return;
+        }
+
+        if ($path === '/public/especialidades/update') {
+            require_once __DIR__ . '/../app/controllers/EspecialidadController.php';
+            $controller = new EspecialidadController();
+            $controller->update();
+            return;
+        }
+        if ($path === '/public/especialidades/delete') {
+        require_once __DIR__ . '/../app/controllers/EspecialidadController.php';
+        $controller = new EspecialidadController();
+        $controller->delete();
+        return;
+        }
+
         http_response_code(404);
         require __DIR__ . '/../app/views/errors/404.php';
     }

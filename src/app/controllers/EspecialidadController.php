@@ -15,4 +15,107 @@ class EspecialidadController extends Controller
             'especialidades' => $especialidades
         ]);
     }
+
+    public function create(): void
+    {
+        $this->render('especialidades/create', [
+            'title' => 'Crear especialidad - ReparaYa'
+        ]);
+    }
+
+    public function store(): void
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: /public/especialidades');
+            exit;
+        }
+
+        $nombreEspecialidad = trim($_POST['nombre_especialidad'] ?? '');
+
+        if ($nombreEspecialidad === '') {
+            $this->render('especialidades/create', [
+                'title' => 'Crear especialidad - ReparaYa',
+                'error' => 'El nombre de la especialidad es obligatorio.'
+            ]);
+            return;
+        }
+
+        $especialidadModel = new Especialidad();
+        $especialidadModel->create($nombreEspecialidad);
+
+        header('Location: /public/especialidades');
+        exit;
+    }
+
+    public function edit(): void
+    {
+        $id = (int) ($_GET['id'] ?? 0);
+
+        if ($id <= 0) {
+            header('Location: /public/especialidades');
+            exit;
+        }
+
+        $especialidadModel = new Especialidad();
+        $especialidad = $especialidadModel->getById($id);
+
+        if (!$especialidad) {
+            header('Location: /public/especialidades');
+            exit;
+        }
+
+        $this->render('especialidades/edit', [
+            'title' => 'Editar especialidad - ReparaYa',
+            'especialidad' => $especialidad
+        ]);
+    }
+
+    public function update(): void
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: /public/especialidades');
+            exit;
+        }
+
+        $id = (int) ($_POST['id'] ?? 0);
+        $nombreEspecialidad = trim($_POST['nombre_especialidad'] ?? '');
+
+        if ($id <= 0) {
+            header('Location: /public/especialidades');
+            exit;
+        }
+
+        if ($nombreEspecialidad === '') {
+            $especialidadModel = new Especialidad();
+            $especialidad = $especialidadModel->getById($id);
+
+            $this->render('especialidades/edit', [
+                'title' => 'Editar especialidad - ReparaYa',
+                'error' => 'El nombre de la especialidad es obligatorio.',
+                'especialidad' => $especialidad
+            ]);
+            return;
+        }
+
+        $especialidadModel = new Especialidad();
+        $especialidadModel->update($id, $nombreEspecialidad);
+
+        header('Location: /public/especialidades');
+        exit;
+    }
+     public function delete(): void
+    {
+    $id = (int) ($_GET['id'] ?? 0);
+
+    if ($id <= 0) {
+        header('Location: /public/especialidades');
+        exit;
+    }
+
+    $especialidadModel = new Especialidad();
+    $especialidadModel->delete($id);
+
+    header('Location: /public/especialidades');
+    exit;
+    }
 }
