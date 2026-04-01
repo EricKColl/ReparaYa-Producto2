@@ -25,6 +25,20 @@ class Router
             return;
         }
 
+        if ($path === '/public/register' && $_SERVER['REQUEST_METHOD'] === 'GET') {
+            require_once __DIR__ . '/../app/controllers/UsuarioController.php';
+            $controller = new UsuarioController();
+            $controller->registerForm();
+            return;
+        }
+
+        if ($path === '/public/register' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+            require_once __DIR__ . '/../app/controllers/UsuarioController.php';
+            $controller = new UsuarioController();
+            $controller->register();
+            return;
+        }
+
         if ($path === '/public/logout' && $_SERVER['REQUEST_METHOD'] === 'GET') {
             require_once __DIR__ . '/../app/controllers/UsuarioController.php';
             $controller = new UsuarioController();

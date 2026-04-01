@@ -336,4 +336,57 @@ class UsuarioController extends Controller
         header('Location: /public/perfil?ok=perfil_actualizado');
         exit;
     }
+
+    public function registerForm(): void
+    {
+        $this->redirectIfLoggedIn();
+
+        $this->render('auth/register', [
+            'title' => 'Registro - ReparaYa'
+        ]);
+    }
+
+    public function register(): void
+    {
+        $this->redirectIfLoggedIn();
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: /public/register');
+            exit;
+        }
+
+        $usuarioModel = new Usuario();
+
+        $data = [
+            'nombre' => trim($_POST['nombre'] ?? ''),
+            'email' => trim($_POST['email'] ?? ''),
+            'password' => trim($_POST['password'] ?? ''),
+            'rol' => 'particular',
+            'telefono' => trim($_POST['telefono'] ?? '')
+        ];
+
+        if ($data['nombre'] === '' || $data['email'] === '' || $data['password'] === '') {
+            header('Location: /public/register?error=campos_vacios');
+            exit;
+        }
+
+        if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+            header('Location: /public/register?error=email_invalido');
+            exit;
+        }
+
+        $emailExistente = $usuarioModel->getByEmail($data['email']);
+
+        if ($emailExistente) {
+            header('Location: /public/register?error=email_duplicado');
+            exit;
+        }
+
+        $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
+
+        $usuarioModel->create($data);
+
+        header('Location: /public/login');
+        exit;
+    }
 }
