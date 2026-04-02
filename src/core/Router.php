@@ -100,6 +100,8 @@ class Router
             $controller = new UsuarioController();
             $controller->delete();
             return;
+        }
+
         if ($path === '/public/especialidades') {
             require_once __DIR__ . '/../app/controllers/EspecialidadController.php';
             $controller = new EspecialidadController();
@@ -114,7 +116,7 @@ class Router
             return;
         }
 
-        if ($path === '/public/especialidades/store') {
+        if ($path === '/public/especialidades/store' && $_SERVER['REQUEST_METHOD'] === 'POST') {
             require_once __DIR__ . '/../app/controllers/EspecialidadController.php';
             $controller = new EspecialidadController();
             $controller->store();
@@ -128,59 +130,60 @@ class Router
             return;
         }
 
-        if ($path === '/public/especialidades/update') {
+        if ($path === '/public/especialidades/update' && $_SERVER['REQUEST_METHOD'] === 'POST') {
             require_once __DIR__ . '/../app/controllers/EspecialidadController.php';
             $controller = new EspecialidadController();
             $controller->update();
             return;
         }
-        if ($path === '/public/especialidades/delete') {
-        require_once __DIR__ . '/../app/controllers/EspecialidadController.php';
-        $controller = new EspecialidadController();
-        $controller->delete();
-        return;
+
+        if ($path === '/public/especialidades/delete' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+            require_once __DIR__ . '/../app/controllers/EspecialidadController.php';
+            $controller = new EspecialidadController();
+            $controller->delete();
+            return;
         }
 
         if ($path === '/public/tecnicos') {
-        require_once __DIR__ . '/../app/controllers/TecnicoController.php';
-        $controller = new TecnicoController();
-        $controller->index();
-        return;
+            require_once __DIR__ . '/../app/controllers/TecnicoController.php';
+            $controller = new TecnicoController();
+            $controller->index();
+            return;
         }
 
         if ($path === '/public/tecnicos/create') {
-        require_once __DIR__ . '/../app/controllers/TecnicoController.php';
-        $controller = new TecnicoController();
-        $controller->create();
-        return;
+            require_once __DIR__ . '/../app/controllers/TecnicoController.php';
+            $controller = new TecnicoController();
+            $controller->create();
+            return;
         }
 
-        if ($path === '/public/tecnicos/store') {
-        require_once __DIR__ . '/../app/controllers/TecnicoController.php';
-        $controller = new TecnicoController();
-        $controller->store();
-        return;
+        if ($path === '/public/tecnicos/store' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+            require_once __DIR__ . '/../app/controllers/TecnicoController.php';
+            $controller = new TecnicoController();
+            $controller->store();
+            return;
         }
 
         if ($path === '/public/tecnicos/edit') {
-        require_once __DIR__ . '/../app/controllers/TecnicoController.php';
-        $controller = new TecnicoController();
-        $controller->edit();
-        return;
+            require_once __DIR__ . '/../app/controllers/TecnicoController.php';
+            $controller = new TecnicoController();
+            $controller->edit();
+            return;
         }
 
-        if ($path === '/public/tecnicos/update') {
-        require_once __DIR__ . '/../app/controllers/TecnicoController.php';
-        $controller = new TecnicoController();
-        $controller->update();
-        return;
+        if ($path === '/public/tecnicos/update' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+            require_once __DIR__ . '/../app/controllers/TecnicoController.php';
+            $controller = new TecnicoController();
+            $controller->update();
+            return;
         }
 
-        if ($path === '/public/tecnicos/delete') {
-        require_once __DIR__ . '/../app/controllers/TecnicoController.php';
-        $controller = new TecnicoController();
-        $controller->delete();
-        return;
+        if ($path === '/public/tecnicos/delete' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+            require_once __DIR__ . '/../app/controllers/TecnicoController.php';
+            $controller = new TecnicoController();
+            $controller->delete();
+            return;
         }
 
         http_response_code(404);
