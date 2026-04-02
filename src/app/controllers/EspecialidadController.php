@@ -7,6 +7,8 @@ class EspecialidadController extends Controller
 {
     public function index(): void
     {
+        $this->requireAdmin();
+
         $especialidadModel = new Especialidad();
         $especialidades = $especialidadModel->getAll();
 
@@ -18,6 +20,8 @@ class EspecialidadController extends Controller
 
     public function create(): void
     {
+        $this->requireAdmin();
+
         $this->render('especialidades/create', [
             'title' => 'Crear especialidad - ReparaYa'
         ]);
@@ -25,6 +29,8 @@ class EspecialidadController extends Controller
 
     public function store(): void
     {
+        $this->requireAdmin();
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: /public/especialidades');
             exit;
@@ -43,12 +49,14 @@ class EspecialidadController extends Controller
         $especialidadModel = new Especialidad();
         $especialidadModel->create($nombreEspecialidad);
 
-        header('Location: /public/especialidades');
+        header('Location: /public/especialidades?ok=creada');
         exit;
     }
 
     public function edit(): void
     {
+        $this->requireAdmin();
+
         $id = (int) ($_GET['id'] ?? 0);
 
         if ($id <= 0) {
@@ -72,6 +80,8 @@ class EspecialidadController extends Controller
 
     public function update(): void
     {
+        $this->requireAdmin();
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: /public/especialidades');
             exit;
@@ -100,22 +110,35 @@ class EspecialidadController extends Controller
         $especialidadModel = new Especialidad();
         $especialidadModel->update($id, $nombreEspecialidad);
 
-        header('Location: /public/especialidades');
+        header('Location: /public/especialidades?ok=actualizada');
         exit;
     }
-     public function delete(): void
+
+    public function delete(): void
     {
-    $id = (int) ($_GET['id'] ?? 0);
+        $this->requireAdmin();
 
-    if ($id <= 0) {
-        header('Location: /public/especialidades');
-        exit;
-    }
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: /public/especialidades');
+            exit;
+        }
 
-    $especialidadModel = new Especialidad();
-    $especialidadModel->delete($id);
+        $id = (int) ($_POST['id'] ?? 0);
 
-    header('Location: /public/especialidades');
-    exit;
+        if ($id <= 0) {
+            header('Location: /public/especialidades');
+            exit;
+        }
+
+        $especialidadModel = new Especialidad();
+
+        try {
+            $especialidadModel->delete($id);
+            header('Location: /public/especialidades?ok=eliminada');
+            exit;
+        } catch (PDOException $e) {
+            header('Location: /public/especialidades?error=en_uso');
+            exit;
+        }
     }
 }

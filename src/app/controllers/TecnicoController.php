@@ -8,6 +8,8 @@ class TecnicoController extends Controller
 {
     public function index(): void
     {
+        $this->requireAdmin();
+
         $tecnicoModel = new Tecnico();
         $tecnicos = $tecnicoModel->getAll();
 
@@ -19,6 +21,8 @@ class TecnicoController extends Controller
 
     public function create(): void
     {
+        $this->requireAdmin();
+
         $especialidadModel = new Especialidad();
         $especialidades = $especialidadModel->getAll();
 
@@ -30,6 +34,8 @@ class TecnicoController extends Controller
 
     public function store(): void
     {
+        $this->requireAdmin();
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: /public/tecnicos');
             exit;
@@ -60,6 +66,8 @@ class TecnicoController extends Controller
 
     public function edit(): void
     {
+        $this->requireAdmin();
+
         $id = (int) ($_GET['id'] ?? 0);
 
         if ($id <= 0) {
@@ -87,6 +95,8 @@ class TecnicoController extends Controller
 
     public function update(): void
     {
+        $this->requireAdmin();
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: /public/tecnicos');
             exit;
@@ -133,10 +143,17 @@ class TecnicoController extends Controller
 
     public function delete(): void
     {
-        $id = (int) ($_GET['id'] ?? 0);
+        $this->requireAdmin();
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: /public/tecnicos');
+            exit;
+        }
+
+        $id = (int) ($_POST['id'] ?? 0);
 
         if ($id <= 0) {
-         header('Location: /public/tecnicos');
+            header('Location: /public/tecnicos');
             exit;
         }
 

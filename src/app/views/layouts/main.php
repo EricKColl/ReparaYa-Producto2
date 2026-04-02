@@ -24,9 +24,11 @@ $usuarioSesion = $_SESSION['usuario'] ?? null;
 
                 <?php if (($usuarioSesion['rol'] ?? '') === 'admin'): ?>
                     | <a href="/public/usuarios">Usuarios</a>
+                    | <a href="/public/tecnicos">Técnicos</a>
+                    | <a href="/public/especialidades">Especialidades</a>
                 <?php endif; ?>
 
-                | <span>Hola, <?= htmlspecialchars($usuarioSesion['nombre']) ?></span>
+                | <span>Hola, <?= htmlspecialchars($usuarioSesion['nombre']) ?> (<?= htmlspecialchars($usuarioSesion['rol']) ?>)</span>
                 | <a href="/public/logout">Cerrar sesión</a>
             <?php else: ?>
                 | <a href="/public/login">Iniciar sesión</a>

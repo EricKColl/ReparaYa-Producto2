@@ -5,32 +5,6 @@ require_once __DIR__ . '/../models/Usuario.php';
 
 class UsuarioController extends Controller
 {
-    private function requireLogin(): void
-    {
-        if (!isset($_SESSION['usuario'])) {
-            header('Location: /public/login');
-            exit;
-        }
-    }
-
-    private function requireAdmin(): void
-    {
-        $this->requireLogin();
-
-        if (($_SESSION['usuario']['rol'] ?? '') !== 'admin') {
-            header('Location: /public');
-            exit;
-        }
-    }
-
-    private function redirectIfLoggedIn(): void
-    {
-        if (isset($_SESSION['usuario'])) {
-            header('Location: /public');
-            exit;
-        }
-    }
-
     public function index(): void
     {
         $this->requireAdmin();
