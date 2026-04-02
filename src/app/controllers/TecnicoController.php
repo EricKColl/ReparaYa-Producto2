@@ -60,7 +60,7 @@ class TecnicoController extends Controller
         $tecnicoModel = new Tecnico();
         $tecnicoModel->create($nombreCompleto, $especialidadId, $disponible);
 
-        header('Location: /public/tecnicos');
+        header('Location: /public/tecnicos?ok=creado');
         exit;
     }
 
@@ -137,7 +137,7 @@ class TecnicoController extends Controller
         $tecnicoModel = new Tecnico();
         $tecnicoModel->update($id, $nombreCompleto, $especialidadId, $disponible);
 
-        header('Location: /public/tecnicos');
+        header('Location: /public/tecnicos?ok=actualizado');
         exit;
     }
 
@@ -158,9 +158,14 @@ class TecnicoController extends Controller
         }
 
         $tecnicoModel = new Tecnico();
-        $tecnicoModel->delete($id);
 
-        header('Location: /public/tecnicos');
-        exit;
+        try {
+            $tecnicoModel->delete($id);
+            header('Location: /public/tecnicos?ok=eliminado');
+            exit;
+        } catch (PDOException $e) {
+            header('Location: /public/tecnicos?error=en_uso');
+            exit;
+        }
     }
 }
