@@ -11,6 +11,7 @@ class Incidencia extends Model
             SELECT 
                 i.id,
                 i.localizador,
+                i.tecnico_id,
                 i.descripcion,
                 i.direccion,
                 i.fecha_servicio,

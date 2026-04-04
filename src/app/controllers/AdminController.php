@@ -13,11 +13,15 @@ class AdminController extends Controller
         $this->requireAdmin();
 
         $incidenciaModel = new Incidencia();
+        $tecnicoModel    = new Tecnico();
+
         $incidencias = $incidenciaModel->getAll();
+        $tecnicos    = $tecnicoModel->getDisponibles();
 
         $this->render('admin/index', [
             'title'       => 'Panel de Administración - ReparaYa',
             'incidencias' => $incidencias,
+            'tecnicos'    => $tecnicos,
         ]);
     }
 
@@ -44,7 +48,7 @@ class AdminController extends Controller
         $descripcion  = trim($_POST['descripcion']       ?? '');
         $direccion    = trim($_POST['direccion']          ?? '');
         $fecha        = trim($_POST['fecha_servicio']     ?? '');
-        $urgencia     = $_POST['tipo_urgencia']           ?? 'Estándar';
+        $urgencia     = $_POST['tipo_urgencia']           ?? 'Estandar';
 
         if (!$clienteId || !$especialidad || !$descripcion || !$direccion || !$fecha) {
             $especialidadModel = new Especialidad();
@@ -114,7 +118,7 @@ class AdminController extends Controller
             'descripcion'     => trim($_POST['descripcion']       ?? ''),
             'direccion'       => trim($_POST['direccion']          ?? ''),
             'fecha_servicio'  => trim($_POST['fecha_servicio']     ?? ''),
-            'tipo_urgencia'   => $_POST['tipo_urgencia']           ?? 'Estándar',
+            'tipo_urgencia'   => $_POST['tipo_urgencia']           ?? 'Estandar',
             'estado'          => $_POST['estado']                  ?? 'Pendiente',
         ]);
 
