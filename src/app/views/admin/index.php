@@ -64,22 +64,24 @@
                     <?= htmlspecialchars($inc['estado']) ?>
                 </td>
 
-                <!-- COLUMNA TÉCNICO: select de asignación o nombre si ya está cerrada -->
                 <td style="padding:6px 12px;">
                     <?php if ($inc['estado'] !== 'Cancelada' && $inc['estado'] !== 'Finalizada'): ?>
+                        <?php $tecnicosDisp = $tecnicosPorEspecialidad[$inc['especialidad_id']] ?? []; ?>
                         <form action="/public/admin/asignar" method="POST"
                             style="display:flex;gap:6px;align-items:center;">
                             <input type="hidden" name="incidencia_id" value="<?= $inc['id'] ?>">
                             <select name="tecnico_id"
                                 style="margin:0;padding:6px 10px;font-size:0.9rem;width:auto;max-width:200px;">
                                 <option value="">— Sin asignar —</option>
-                                <?php foreach ($tecnicos as $t): ?>
+                                <?php foreach ($tecnicosDisp as $t): ?>
                                     <option value="<?= $t['id'] ?>"
                                         <?= $inc['tecnico_id'] == $t['id'] ? 'selected' : '' ?>>
                                         <?= htmlspecialchars($t['nombre_completo']) ?>
-                                        (<?= htmlspecialchars($t['nombre_especialidad']) ?>)
                                     </option>
                                 <?php endforeach; ?>
+                                <?php if (empty($tecnicosDisp)): ?>
+                                    <option disabled>No hay técnicos disponibles</option>
+                                <?php endif; ?>
                             </select>
                             <button type="submit" style="padding:6px 14px;font-size:0.95rem;">✓</button>
                         </form>

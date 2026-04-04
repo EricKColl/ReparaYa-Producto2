@@ -13,6 +13,7 @@ class Incidencia extends Model
                 i.localizador,
                 i.tecnico_id,
                 i.descripcion,
+                i.especialidad_id,
                 i.direccion,
                 i.fecha_servicio,
                 i.tipo_urgencia,

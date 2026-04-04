@@ -16,12 +16,19 @@ class AdminController extends Controller
         $tecnicoModel    = new Tecnico();
 
         $incidencias = $incidenciaModel->getAll();
-        $tecnicos    = $tecnicoModel->getDisponibles();
+
+        $tecnicosPorEspecialidad = [];
+        foreach ($incidencias as $inc) {
+            $espId = $inc['especialidad_id'];
+            if (!isset($tecnicosPorEspecialidad[$espId])) {
+                $tecnicosPorEspecialidad[$espId] = $tecnicoModel->getDisponiblesByEspecialidad($espId);
+            }
+        }
 
         $this->render('admin/index', [
-            'title'       => 'Panel de Administración - ReparaYa',
-            'incidencias' => $incidencias,
-            'tecnicos'    => $tecnicos,
+            'title'                   => 'Panel de Administración - ReparaYa',
+            'incidencias'             => $incidencias,
+            'tecnicosPorEspecialidad' => $tecnicosPorEspecialidad,
         ]);
     }
 

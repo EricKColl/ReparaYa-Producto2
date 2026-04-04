@@ -496,7 +496,7 @@ $usuarioSesion = $_SESSION['usuario'] ?? null;
                             <a href="/public/perfil">Mi perfil</a>
 
                             <?php if (($usuarioSesion['rol'] ?? '') === 'admin'): ?>
-                                <a href="/public/admin">Panel Admin</a>
+                                <a href="/public/admin">Incidencias</a>
                                 <a href="/public/usuarios">Usuarios</a>
                                 <a href="/public/tecnicos">Técnicos</a>
                                 <a href="/public/especialidades">Especialidades</a>
