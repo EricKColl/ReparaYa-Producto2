@@ -6,6 +6,7 @@ $usuarioSesion = $_SESSION['usuario'] ?? null;
 
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -43,7 +44,8 @@ $usuarioSesion = $_SESSION['usuario'] ?? null;
             box-sizing: border-box;
         }
 
-        html, body {
+        html,
+        body {
             margin: 0;
             padding: 0;
         }
@@ -84,8 +86,8 @@ $usuarioSesion = $_SESSION['usuario'] ?? null;
             position: absolute;
             inset: 0;
             background:
-                linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+                linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
             background-size: 42px 42px;
             opacity: 0.10;
             pointer-events: none;
@@ -99,7 +101,7 @@ $usuarioSesion = $_SESSION['usuario'] ?? null;
             top: -220px;
             right: -140px;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.05) 42%, transparent 72%);
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.05) 42%, transparent 72%);
             filter: blur(8px);
             animation: rp-glow 7s ease-in-out infinite;
             pointer-events: none;
@@ -138,7 +140,7 @@ $usuarioSesion = $_SESSION['usuario'] ?? null;
             font-weight: 900;
             color: var(--rp-white);
             text-shadow:
-                0 0 16px rgba(255,255,255,0.10),
+                0 0 16px rgba(255, 255, 255, 0.10),
                 0 0 34px rgba(191, 219, 254, 0.18);
         }
 
@@ -157,7 +159,7 @@ $usuarioSesion = $_SESSION['usuario'] ?? null;
             align-items: center;
             justify-content: space-between;
             gap: 16px;
-            border-top: 1px solid rgba(255,255,255,0.10);
+            border-top: 1px solid rgba(255, 255, 255, 0.10);
             padding-top: 20px;
             margin-top: 30px;
         }
@@ -183,8 +185,8 @@ $usuarioSesion = $_SESSION['usuario'] ?? null;
             font-weight: 700;
             font-size: 1rem;
             color: #ffffff;
-            background: rgba(255,255,255,0.10);
-            border: 1px solid rgba(255,255,255,0.12);
+            background: rgba(255, 255, 255, 0.10);
+            border: 1px solid rgba(255, 255, 255, 0.12);
             box-shadow: 0 8px 20px rgba(7, 17, 38, 0.10);
             backdrop-filter: blur(10px);
             transition: 0.22s ease;
@@ -204,7 +206,7 @@ $usuarioSesion = $_SESSION['usuario'] ?? null;
 
         .rp-nav a:hover {
             transform: translateY(-2px);
-            background: rgba(255,255,255,0.16);
+            background: rgba(255, 255, 255, 0.16);
         }
 
         .rp-nav-user {
@@ -214,8 +216,8 @@ $usuarioSesion = $_SESSION['usuario'] ?? null;
             min-height: 50px;
             padding: 11px 18px;
             border-radius: 14px;
-            background: rgba(255,255,255,0.12);
-            border: 1px solid rgba(255,255,255,0.14);
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.14);
             color: #e0ecff;
             font-weight: 700;
             font-size: 1rem;
@@ -237,11 +239,11 @@ $usuarioSesion = $_SESSION['usuario'] ?? null;
             content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(135deg, rgba(255,255,255,0.22), transparent 24%);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.22), transparent 24%);
             pointer-events: none;
         }
 
-        .rp-main > * {
+        .rp-main>* {
             position: relative;
             z-index: 1;
         }
@@ -252,7 +254,8 @@ $usuarioSesion = $_SESSION['usuario'] ?? null;
             color: var(--rp-text);
         }
 
-        h3, h4 {
+        h3,
+        h4 {
             color: var(--rp-text);
         }
 
@@ -392,10 +395,13 @@ $usuarioSesion = $_SESSION['usuario'] ?? null;
         }
 
         @keyframes rp-glow {
-            0%, 100% {
+
+            0%,
+            100% {
                 transform: scale(1);
                 opacity: 0.92;
             }
+
             50% {
                 transform: scale(1.06);
                 opacity: 1;
@@ -403,9 +409,12 @@ $usuarioSesion = $_SESSION['usuario'] ?? null;
         }
 
         @keyframes rp-dot {
-            0%, 100% {
+
+            0%,
+            100% {
                 opacity: 1;
             }
+
             50% {
                 opacity: 0.25;
             }
@@ -462,6 +471,7 @@ $usuarioSesion = $_SESSION['usuario'] ?? null;
         }
     </style>
 </head>
+
 <body>
     <div class="rp-shell">
         <header class="rp-header">
@@ -486,6 +496,7 @@ $usuarioSesion = $_SESSION['usuario'] ?? null;
                             <a href="/public/perfil">Mi perfil</a>
 
                             <?php if (($usuarioSesion['rol'] ?? '') === 'admin'): ?>
+                                <a href="/public/admin">Incidencias</a>
                                 <a href="/public/usuarios">Usuarios</a>
                                 <a href="/public/tecnicos">Técnicos</a>
                                 <a href="/public/especialidades">Especialidades</a>
@@ -512,4 +523,5 @@ $usuarioSesion = $_SESSION['usuario'] ?? null;
         </main>
     </div>
 </body>
+
 </html>

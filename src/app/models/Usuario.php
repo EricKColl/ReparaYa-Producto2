@@ -118,4 +118,14 @@ class Usuario extends Model
             'id' => $id
         ]);
     }
+
+    public function getClientes(): array
+    {
+        $stmt = $this->db->query("
+            SELECT id, nombre, email FROM usuarios
+            WHERE rol = 'particular'
+            ORDER BY nombre ASC
+        ");
+        return $stmt->fetchAll();
+    }
 }

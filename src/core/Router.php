@@ -186,6 +186,64 @@ class Router
             return;
         }
 
+        // ── ADMIN ───────────────────────────────────────────────
+        if ($path === '/public/admin' || $path === '/public/admin/') {
+            require_once __DIR__ . '/../app/controllers/AdminController.php';
+            $controller = new AdminController();
+            $controller->index();
+            return;
+        }
+
+        if ($path === '/public/admin/create' && $_SERVER['REQUEST_METHOD'] === 'GET') {
+            require_once __DIR__ . '/../app/controllers/AdminController.php';
+            $controller = new AdminController();
+            $controller->create();
+            return;
+        }
+
+        if ($path === '/public/admin/store' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+            require_once __DIR__ . '/../app/controllers/AdminController.php';
+            $controller = new AdminController();
+            $controller->store();
+            return;
+        }
+
+        if ($path === '/public/admin/edit' && $_SERVER['REQUEST_METHOD'] === 'GET') {
+            require_once __DIR__ . '/../app/controllers/AdminController.php';
+            $controller = new AdminController();
+            $controller->edit();
+            return;
+        }
+
+        if ($path === '/public/admin/update' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+            require_once __DIR__ . '/../app/controllers/AdminController.php';
+            $controller = new AdminController();
+            $controller->update();
+            return;
+        }
+
+        if ($path === '/public/admin/asignar' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+            require_once __DIR__ . '/../app/controllers/AdminController.php';
+            $controller = new AdminController();
+            $controller->asignar();
+            return;
+        }
+
+        if ($path === '/public/admin/delete' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+            require_once __DIR__ . '/../app/controllers/AdminController.php';
+            $controller = new AdminController();
+            $controller->delete();
+            return;
+        }
+
+        if ($path === '/public/admin/calendario' && $_SERVER['REQUEST_METHOD'] === 'GET') {
+            require_once __DIR__ . '/../app/controllers/AdminController.php';
+            $controller = new AdminController();
+            $controller->calendario();
+            return;
+        }
+        // ── FIN ADMIN ────────────────────────────────────────────
+
         http_response_code(404);
         require __DIR__ . '/../app/views/errors/404.php';
     }
