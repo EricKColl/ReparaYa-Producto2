@@ -12,4 +12,50 @@ class Controller
 
         require __DIR__ . '/../app/views/layouts/main.php';
     }
+
+    protected function requireLogin(): void
+    {
+        if (!isset($_SESSION['usuario'])) {
+            header('Location: /public/login');
+            exit;
+        }
+    }
+
+    protected function requireAdmin(): void
+    {
+        $this->requireLogin();
+
+        if (($_SESSION['usuario']['rol'] ?? '') !== 'admin') {
+            header('Location: /public');
+            exit;
+        }
+    }
+
+    protected function requireTecnico(): void
+    {
+        $this->requireLogin();
+
+        if (($_SESSION['usuario']['rol'] ?? '') !== 'tecnico') {
+            header('Location: /public');
+            exit;
+        }
+    }
+
+    protected function requireParticular(): void
+    {
+        $this->requireLogin();
+
+        if (($_SESSION['usuario']['rol'] ?? '') !== 'particular') {
+            header('Location: /public');
+            exit;
+        }
+    }
+
+    protected function redirectIfLoggedIn(): void
+    {
+        if (isset($_SESSION['usuario'])) {
+            header('Location: /public');
+            exit;
+        }
+    }
 }
