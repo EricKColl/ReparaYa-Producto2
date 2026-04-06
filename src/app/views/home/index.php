@@ -1,230 +1,264 @@
 <?php
-$usuarioSesion = $_SESSION['usuario'] ?? null;
-$esAdmin = ($usuarioSesion['rol'] ?? '') === 'admin';
+$usuarioSesion = $usuarioSesion ?? ($_SESSION['usuario'] ?? null);
+$rolInicio = $rolInicio ?? 'public';
+$dashboard = $dashboard ?? [];
+
+function homeFecha(?string $fecha): string
+{
+    if (!$fecha || strtotime($fecha) === false) {
+        return 'Fecha no disponible';
+    }
+
+    return date('d/m/Y H:i', strtotime($fecha));
+}
+
+function homeEstadoClase(string $estado): string
+{
+    return match ($estado) {
+        'Pendiente' => 'home-badge-pendiente',
+        'Asignada' => 'home-badge-asignada',
+        'Finalizada' => 'home-badge-finalizada',
+        'Cancelada' => 'home-badge-cancelada',
+        default => 'home-badge-pendiente',
+    };
+}
+
+function homeUrgenciaClase(string $urgencia): string
+{
+    return $urgencia === 'Urgente' ? 'home-badge-urgente' : 'home-badge-estandar';
+}
 ?>
 
 <style>
-    .home-pro-hero {
+    .home-wrap {
+        display: grid;
+        gap: 30px;
+    }
+
+    .home-hero {
         position: relative;
         overflow: hidden;
-        border-radius: 26px;
-        padding: 34px 34px 30px;
-        margin-bottom: 30px;
+        border-radius: 32px;
+        padding: 42px 36px 44px;
         background:
-            radial-gradient(circle at top right, rgba(59, 130, 246, 0.14), transparent 24%),
-            linear-gradient(135deg, #ffffff 0%, #f7fbff 100%);
+            radial-gradient(circle at top right, rgba(59,130,246,0.14), transparent 25%),
+            radial-gradient(circle at bottom left, rgba(37,99,235,0.10), transparent 24%),
+            linear-gradient(180deg, #ffffff 0%, #f7faff 100%);
         border: 1px solid #dbe7ff;
-        box-shadow: 0 18px 40px rgba(15, 23, 42, 0.07);
+        box-shadow: 0 20px 40px rgba(15, 23, 42, 0.07);
         text-align: center;
     }
 
-    .home-pro-hero::after {
+    .home-hero::after {
         content: '';
         position: absolute;
         inset: 0;
-        background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.26) 45%, transparent 100%);
+        background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.24) 45%, transparent 100%);
         transform: translateX(-120%);
-        animation: homeProShine 7s linear infinite;
+        animation: homeShine 8s linear infinite;
         pointer-events: none;
     }
 
-    .home-pro-hero > * {
+    .home-hero > * {
         position: relative;
         z-index: 1;
     }
 
-    .home-pro-kicker {
+    .home-chip {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        padding: 9px 15px;
+        min-height: 38px;
+        padding: 8px 16px;
         border-radius: 999px;
         background: #e8f1ff;
         border: 1px solid #cfe0ff;
         color: #1d4ed8;
-        font-weight: 700;
+        font-weight: 800;
         font-size: 0.92rem;
         margin-bottom: 18px;
     }
 
-    .home-pro-title {
-        margin: 0 auto 16px auto;
-        max-width: 1320px;
-        font-size: clamp(2.9rem, 4.8vw, 5.4rem);
-        line-height: 1.03;
-        color: #0f172a;
+    .home-title {
+        margin: 0 auto;
+        max-width: 1450px;
+        font-size: clamp(3rem, 5vw, 5.5rem);
+        line-height: 0.98;
         letter-spacing: -0.04em;
+        color: #0f172a;
+        font-weight: 900;
+        text-align: center;
+        text-wrap: balance;
     }
 
-    .home-pro-title span {
+    .home-title span {
         display: block;
-        color: #1d4ed8;
+        background: linear-gradient(90deg, #0f172a 0%, #1d4ed8 55%, #2563eb 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        color: transparent;
     }
 
-    .home-pro-slogan {
-        margin: 0 auto 14px auto;
-        max-width: 1100px;
-        font-size: 1.26rem;
-        line-height: 1.65;
-        font-weight: 700;
-        color: #1e3a8a;
+    .home-subtitle {
+        margin: 20px auto 0;
+        max-width: 1200px;
+        color: #475569;
+        font-size: 1.14rem;
+        line-height: 1.95;
+        text-wrap: balance;
+        text-align: center;
     }
 
-    .home-pro-subtitle {
-        margin: 0 auto 24px auto;
-        max-width: 1180px;
-        font-size: 1.08rem;
-        line-height: 1.82;
-        color: #334155;
-    }
-
-    .home-pro-actions {
+    .home-actions {
         display: flex;
         flex-wrap: wrap;
-        gap: 14px;
         justify-content: center;
-        margin-bottom: 24px;
+        gap: 14px;
+        margin-top: 26px;
     }
 
-    .home-pro-btn {
+    .home-btn {
         display: inline-flex;
         align-items: center;
         justify-content: center;
         min-height: 52px;
-        padding: 12px 20px;
-        border-radius: 14px;
+        padding: 12px 22px;
+        border-radius: 16px;
         text-decoration: none;
-        font-weight: 700;
+        font-weight: 800;
+        font-size: 1rem;
         transition: 0.22s ease;
     }
 
-    .home-pro-btn-primary {
-        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    .home-btn-primary {
         color: #ffffff;
-        box-shadow: 0 14px 24px rgba(37, 99, 235, 0.16);
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        box-shadow: 0 14px 24px rgba(37, 99, 235, 0.18);
     }
 
-    .home-pro-btn-primary:hover {
-        transform: translateY(-2px);
-    }
-
-    .home-pro-btn-secondary {
-        background: #eef5ff;
+    .home-btn-secondary {
         color: #1d4ed8;
-        border: 1px solid #bfdbfe;
+        background: #eaf2ff;
+        border: 1px solid #dbeafe;
     }
 
-    .home-pro-btn-secondary:hover {
+    .home-btn:hover {
         transform: translateY(-2px);
-        background: #e0ecff;
     }
 
-    .home-pro-summary {
+    .home-grid-4,
+    .home-grid-3,
+    .home-grid-2 {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 16px;
-        text-align: left;
-    }
-
-    .home-pro-summary-card {
-        background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
-        border: 1px solid #dbe7ff;
-        border-radius: 20px;
-        padding: 20px;
-        box-shadow: 0 12px 26px rgba(15, 23, 42, 0.06);
-    }
-
-    .home-pro-summary-card h3 {
-        margin: 0 0 10px 0;
-        font-size: 1.16rem;
-        color: #0f172a;
-    }
-
-    .home-pro-summary-card p {
-        margin: 0;
-        line-height: 1.72;
-        color: #475569;
-    }
-
-    .home-pro-section {
-        margin-bottom: 30px;
-    }
-
-    .home-pro-section-title {
-        margin: 0 0 12px 0;
-        font-size: 2rem;
-        color: #0f172a;
-    }
-
-    .home-pro-section-subtitle {
-        margin: 0 0 20px 0;
-        color: #475569;
-        font-size: 1.04rem;
-        line-height: 1.72;
-    }
-
-    .home-pro-services {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         gap: 18px;
     }
 
-    .home-pro-service {
+    .home-grid-4 {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .home-grid-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .home-grid-2 {
+        grid-template-columns: 1.2fr 1fr;
+    }
+
+    .home-stat-card,
+    .home-panel-card,
+    .home-service-card,
+    .home-step-card,
+    .home-list-card,
+    .home-highlight,
+    .home-client-section {
+        background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+        border: 1px solid #dbe7ff;
+        border-radius: 24px;
+        padding: 24px;
+        box-shadow: 0 14px 28px rgba(15, 23, 42, 0.06);
+    }
+
+    .home-stat-card {
         position: relative;
         overflow: hidden;
-        border-radius: 22px;
-        padding: 22px;
-        background:
-            radial-gradient(circle at top right, rgba(59, 130, 246, 0.10), transparent 24%),
-            linear-gradient(135deg, #0f172a 0%, #183b8a 100%);
-        box-shadow: 0 16px 32px rgba(15, 23, 42, 0.12);
     }
 
-    .home-pro-service::after {
+    .home-stat-card::after {
         content: '';
         position: absolute;
-        inset: 0;
-        background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.06) 45%, transparent 100%);
-        transform: translateX(-120%);
-        animation: homeProShine 7.5s linear infinite;
+        top: -35px;
+        right: -35px;
+        width: 110px;
+        height: 110px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(59,130,246,0.12), transparent 70%);
     }
 
-    .home-pro-service h4,
-    .home-pro-service p {
+    .home-stat-card > * {
         position: relative;
         z-index: 1;
     }
 
-    .home-pro-service h4 {
+    .home-stat-label {
         margin: 0 0 10px 0;
-        color: #ffffff;
-        font-size: 1.12rem;
+        color: #64748b;
+        font-weight: 800;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
     }
 
-    .home-pro-service p {
+    .home-stat-value {
         margin: 0;
-        color: #dbeafe;
-        line-height: 1.7;
+        color: #0f172a;
+        font-size: 2.55rem;
+        font-weight: 900;
+        line-height: 1;
     }
 
-    .home-pro-modules {
+    .home-stat-help {
+        margin: 10px 0 0 0;
+        color: #64748b;
+        font-size: 0.95rem;
+        line-height: 1.75;
+    }
+
+    .home-section {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
         gap: 18px;
     }
 
-    .home-pro-module {
-        position: relative;
-        overflow: hidden;
-        background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
-        border: 1px solid #dbe7ff;
-        border-radius: 22px;
-        padding: 24px;
-        box-shadow: 0 14px 30px rgba(15, 23, 42, 0.07);
-        transition: transform 0.22s ease, box-shadow 0.22s ease;
+    .home-section-head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
     }
 
-    .home-pro-module::before {
+    .home-section-title {
+        margin: 0 0 10px 0;
+        font-size: clamp(2rem, 3vw, 2.7rem);
+        line-height: 1.06;
+        color: #0f172a;
+    }
+
+    .home-section-text {
+        margin: 0;
+        color: #64748b;
+        font-size: 1rem;
+        line-height: 1.85;
+        max-width: 1000px;
+    }
+
+    .home-panel-card {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .home-panel-card::after {
         content: '';
         position: absolute;
         top: -40px;
@@ -232,287 +266,839 @@ $esAdmin = ($usuarioSesion['rol'] ?? '') === 'admin';
         width: 120px;
         height: 120px;
         border-radius: 50%;
-        background: radial-gradient(circle, rgba(59,130,246,0.15), transparent 70%);
+        background: radial-gradient(circle, rgba(59,130,246,0.14), transparent 70%);
     }
 
-    .home-pro-module:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 20px 36px rgba(15, 23, 42, 0.10);
+    .home-panel-card > * {
+        position: relative;
+        z-index: 1;
     }
 
-    .home-pro-module-tag {
+    .home-panel-kicker,
+    .home-client-kicker {
         display: inline-flex;
         align-items: center;
-        justify-content: center;
+        gap: 8px;
         min-height: 34px;
-        padding: 8px 12px;
+        padding: 7px 12px;
         border-radius: 999px;
-        background: #eff6ff;
+        background: #eef4ff;
         border: 1px solid #dbeafe;
-        color: #1d4ed8;
-        font-weight: 700;
+        color: #2563eb;
+        font-weight: 800;
         font-size: 0.84rem;
         margin-bottom: 12px;
     }
 
-    .home-pro-module h3 {
+    .home-client-kicker.recent {
+        background: #eefcf4;
+        border-color: #ccefdc;
+        color: #15803d;
+    }
+
+    .home-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        display: inline-block;
+        flex-shrink: 0;
+    }
+
+    .home-dot-blue { background: #2563eb; }
+    .home-dot-green { background: #15803d; }
+    .home-dot-red { background: #dc2626; }
+    .home-dot-gold { background: #d97706; }
+
+    .home-panel-title {
         margin: 0 0 10px 0;
-        font-size: 1.24rem;
+        font-size: 1.35rem;
         color: #0f172a;
     }
 
-    .home-pro-module p {
+    .home-panel-text {
         margin: 0 0 16px 0;
-        line-height: 1.72;
-        color: #334155;
+        color: #475569;
+        line-height: 1.8;
     }
 
-    .home-pro-module a {
+    .home-panel-link {
         text-decoration: none;
-        font-weight: 700;
+        font-weight: 800;
+        color: #1d4ed8;
     }
 
-    .home-pro-info {
-        display: grid;
-        grid-template-columns: 1.25fr 1fr;
-        gap: 18px;
+    .home-service-card.dark {
+        background:
+            radial-gradient(circle at top right, rgba(59,130,246,0.12), transparent 26%),
+            linear-gradient(135deg, #0f172a 0%, #173a8a 100%);
+        border-color: rgba(37,99,235,0.15);
+        box-shadow: 0 18px 32px rgba(15, 23, 42, 0.12);
     }
 
-    .home-pro-info-card {
-        background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
-        border: 1px solid #dbe7ff;
-        border-radius: 22px;
-        padding: 24px;
-        box-shadow: 0 14px 30px rgba(15, 23, 42, 0.06);
+    .home-service-card.dark h3,
+    .home-service-card.dark p {
+        color: #ffffff;
     }
 
-    .home-pro-info-card h3 {
-        margin: 0 0 14px 0;
-        font-size: 1.3rem;
+    .home-service-card.dark p {
+        color: #dbeafe;
+    }
+
+    .home-service-card h3,
+    .home-step-card h3,
+    .home-list-card h3,
+    .home-highlight h3,
+    .home-client-section h3 {
+        margin: 0 0 10px 0;
+        font-size: 1.2rem;
         color: #0f172a;
     }
 
-    .home-pro-info-card ul {
+    .home-service-card p,
+    .home-step-card p,
+    .home-list-card p,
+    .home-highlight p,
+    .home-client-section p {
         margin: 0;
-        padding-left: 20px;
+        color: #475569;
+        line-height: 1.78;
     }
 
-    .home-pro-info-card li {
-        margin-bottom: 10px;
-        line-height: 1.68;
-        color: #334155;
+    .home-list {
+        display: grid;
+        gap: 14px;
     }
 
-    .home-pro-status {
-        border-radius: 16px;
-        padding: 18px;
-        margin-top: 12px;
-        font-weight: 700;
-        line-height: 1.66;
+    .home-list-link {
+        display: block;
+        text-decoration: none;
+        color: inherit;
+        transition: 0.22s ease;
     }
 
-    .home-pro-status.ok {
+    .home-list-link:hover {
+        transform: translateY(-2px);
+    }
+
+    .home-list-item {
+        display: grid;
+        gap: 8px;
+        padding: 18px 18px 16px;
+        border-radius: 20px;
+        background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+        border: 1px solid #dbeafe;
+        box-shadow: 0 10px 18px rgba(15, 23, 42, 0.04);
+        transition: 0.22s ease;
+    }
+
+    .home-list-link:hover .home-list-item {
+        border-color: #bfd8ff;
+        box-shadow: 0 16px 28px rgba(37, 99, 235, 0.08);
+    }
+
+    .home-list-top {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+    }
+
+    .home-list-code {
+        color: #0f172a;
+        font-weight: 900;
+        font-size: 1rem;
+    }
+
+    .home-list-meta {
+        color: #475569;
+        line-height: 1.72;
+        font-size: 0.98rem;
+    }
+
+    .home-list-cta {
+        color: #1d4ed8;
+        font-weight: 800;
+        font-size: 0.92rem;
+        margin-top: 4px;
+    }
+
+    .home-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 36px;
+        padding: 6px 12px;
+        border-radius: 999px;
+        font-weight: 800;
+        font-size: 0.9rem;
+        border: 1px solid transparent;
+        white-space: nowrap;
+    }
+
+    .home-badge-urgente {
+        background: #fee2e2;
+        color: #b91c1c;
+        border-color: #fecaca;
+    }
+
+    .home-badge-estandar {
         background: #dcfce7;
         color: #166534;
-        border: 1px solid #bbf7d0;
+        border-color: #bbf7d0;
     }
 
-    .home-pro-status.info {
-        background: #e0ecff;
+    .home-badge-pendiente {
+        background: #fef3c7;
+        color: #92400e;
+        border-color: #fde68a;
+    }
+
+    .home-badge-asignada {
+        background: #dbeafe;
         color: #1d4ed8;
-        border: 1px solid #bfdbfe;
+        border-color: #bfdbfe;
     }
 
-    @keyframes homeProShine {
-        0% {
-            transform: translateX(-120%);
-        }
-        100% {
-            transform: translateX(120%);
-        }
+    .home-badge-finalizada {
+        background: #dcfce7;
+        color: #166534;
+        border-color: #bbf7d0;
     }
 
-    @media (max-width: 1100px) {
-        .home-pro-info {
+    .home-badge-cancelada {
+        background: #fee2e2;
+        color: #b91c1c;
+        border-color: #fecaca;
+    }
+
+    .home-empty {
+        padding: 18px;
+        border-radius: 18px;
+        background: #f8fafc;
+        border: 1px dashed #cbd5e1;
+        color: #64748b;
+        line-height: 1.8;
+    }
+
+    .home-highlight {
+        display: grid;
+        gap: 14px;
+        padding: 24px;
+        border-radius: 24px;
+        background:
+            radial-gradient(circle at top right, rgba(59,130,246,0.10), transparent 26%),
+            linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+        border: 1px solid #dbe7ff;
+        box-shadow: 0 14px 28px rgba(15, 23, 42, 0.06);
+    }
+
+    .home-marketing-list {
+        display: grid;
+        gap: 16px;
+    }
+
+    .home-marketing-row {
+        padding: 18px 20px;
+        border-radius: 18px;
+        background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+        border: 1px solid #dbeafe;
+        box-shadow: 0 10px 18px rgba(15, 23, 42, 0.04);
+    }
+
+    .home-marketing-row strong {
+        color: #0f172a;
+    }
+
+    .home-client-stack {
+        display: grid;
+        gap: 20px;
+    }
+
+    .home-client-section {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .home-client-section::after {
+        content: '';
+        position: absolute;
+        top: -36px;
+        right: -36px;
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(59,130,246,0.10), transparent 70%);
+    }
+
+    .home-client-section > * {
+        position: relative;
+        z-index: 1;
+    }
+
+    .home-client-section.recent::after {
+        background: radial-gradient(circle, rgba(22,163,74,0.10), transparent 70%);
+    }
+
+    .home-client-head {
+        margin-bottom: 18px;
+    }
+
+    .home-client-title {
+        margin: 0 0 10px 0;
+        font-size: clamp(1.7rem, 2.3vw, 2.2rem);
+        line-height: 1.06;
+        color: #0f172a;
+    }
+
+    .home-client-text {
+        margin: 0;
+        color: #64748b;
+        line-height: 1.82;
+        max-width: 950px;
+    }
+
+    .home-client-agenda-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+    }
+
+    .home-client-agenda-card {
+        display: grid;
+        gap: 10px;
+        padding: 18px;
+        border-radius: 22px;
+        background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+        border: 1px solid #dbeafe;
+        box-shadow: 0 10px 18px rgba(15, 23, 42, 0.04);
+        text-decoration: none;
+        transition: 0.22s ease;
+    }
+
+    .home-client-agenda-card:hover {
+        transform: translateY(-2px);
+        border-color: #bfd8ff;
+        box-shadow: 0 16px 28px rgba(37, 99, 235, 0.08);
+    }
+
+    .home-client-agenda-top {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+    }
+
+    .home-client-agenda-code {
+        color: #0f172a;
+        font-size: 1rem;
+        font-weight: 900;
+    }
+
+    .home-client-agenda-meta {
+        color: #475569;
+        line-height: 1.72;
+        font-size: 0.98rem;
+    }
+
+    .home-client-agenda-cta {
+        margin-top: 2px;
+        color: #1d4ed8;
+        font-weight: 800;
+        font-size: 0.93rem;
+    }
+
+    .home-client-recent-list {
+        display: grid;
+        gap: 14px;
+    }
+
+    .home-client-recent-row {
+        display: grid;
+        grid-template-columns: 1.2fr auto auto;
+        gap: 16px;
+        align-items: center;
+        padding: 18px;
+        border-radius: 20px;
+        background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+        border: 1px solid #dbeafe;
+        box-shadow: 0 10px 18px rgba(15, 23, 42, 0.04);
+        text-decoration: none;
+        transition: 0.22s ease;
+    }
+
+    .home-client-recent-row:hover {
+        transform: translateY(-2px);
+        border-color: #bfe8cf;
+        box-shadow: 0 16px 28px rgba(22, 163, 74, 0.08);
+    }
+
+    .home-client-recent-main {
+        display: grid;
+        gap: 6px;
+    }
+
+    .home-client-recent-title {
+        color: #0f172a;
+        font-weight: 900;
+        font-size: 1rem;
+    }
+
+    .home-client-recent-meta {
+        color: #475569;
+        line-height: 1.72;
+        font-size: 0.98rem;
+    }
+
+    .home-client-recent-cta {
+        color: #15803d;
+        font-weight: 800;
+        font-size: 0.92rem;
+        white-space: nowrap;
+    }
+
+    @keyframes homeShine {
+        0% { transform: translateX(-120%); }
+        100% { transform: translateX(120%); }
+    }
+
+    @media (max-width: 1200px) {
+        .home-grid-4 {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .home-grid-2 {
+            grid-template-columns: 1fr;
+        }
+
+        .home-client-agenda-grid {
             grid-template-columns: 1fr;
         }
     }
 
-    @media (max-width: 900px) {
-        .home-pro-hero,
-        .home-pro-summary-card,
-        .home-pro-module,
-        .home-pro-service,
-        .home-pro-info-card {
+    @media (max-width: 950px) {
+        .home-client-recent-row {
+            grid-template-columns: 1fr;
+            align-items: start;
+        }
+    }
+
+    @media (max-width: 850px) {
+        .home-grid-4,
+        .home-grid-3 {
+            grid-template-columns: 1fr;
+        }
+
+        .home-hero,
+        .home-stat-card,
+        .home-panel-card,
+        .home-service-card,
+        .home-step-card,
+        .home-list-card,
+        .home-highlight,
+        .home-client-section {
             padding: 20px;
         }
 
-        .home-pro-title {
-            font-size: 2.7rem;
+        .home-title {
+            font-size: 2.8rem;
         }
 
-        .home-pro-slogan {
-            font-size: 1.08rem;
-        }
-
-        .home-pro-subtitle {
+        .home-subtitle {
             font-size: 1rem;
         }
     }
 </style>
 
-<section class="home-pro-hero">
-    <div class="home-pro-kicker">Centro de coordinación operativa</div>
+<div class="home-wrap">
 
-    <h2 class="home-pro-title">
-        Desde la avería hasta la solución,
-        <span>todo el servicio en una sola plataforma</span>
-    </h2>
+    <?php if ($rolInicio === 'admin'): ?>
+        <section class="home-hero">
+            <div class="home-chip">Inicio de administración · Dirección operativa</div>
+            <h2 class="home-title">
+                Una visión centralizada
+                <span>para dirigir el servicio con agilidad</span>
+            </h2>
+            <p class="home-subtitle">
+                Supervisa incidencias, coordina recursos, prioriza servicios y mantén el control del negocio desde un entorno pensado para tomar decisiones rápidas, claras y profesionales.
+            </p>
 
-    <p class="home-pro-slogan">
-        Menos caos, más soluciones. Y, por fin, ningún grifo manda más que tu equipo.
-    </p>
-
-    <p class="home-pro-subtitle">
-        ReparaYa está diseñada para centralizar en un mismo entorno digital la gestión de clientes, técnicos, especialidades, incidencias y operativa diaria,
-        ofreciendo una base clara, profesional y preparada para crecer hacia un sistema completo de seguimiento, planificación y control del servicio.
-    </p>
-
-    <div class="home-pro-actions">
-        <?php if (!$usuarioSesion): ?>
-            <a class="home-pro-btn home-pro-btn-primary" href="/public/login">Acceder a la plataforma</a>
-            <a class="home-pro-btn home-pro-btn-secondary" href="/public/register">Crear cuenta</a>
-        <?php else: ?>
-            <a class="home-pro-btn home-pro-btn-primary" href="/public/perfil">Ir a mi perfil</a>
-
-            <?php if ($esAdmin): ?>
-                <a class="home-pro-btn home-pro-btn-secondary" href="/public/usuarios">Abrir panel de administración</a>
-            <?php endif; ?>
-        <?php endif; ?>
-    </div>
-
-    <div class="home-pro-summary">
-        <article class="home-pro-summary-card">
-            <h3>Clientes y solicitudes</h3>
-            <p>Una base preparada para registrar avisos, organizar peticiones y centralizar la relación con el servicio.</p>
-        </article>
-
-        <article class="home-pro-summary-card">
-            <h3>Técnicos y especialidades</h3>
-            <p>Estructura técnica pensada para asignar profesionales adecuados y mantener la operativa bien organizada.</p>
-        </article>
-
-        <article class="home-pro-summary-card">
-            <h3>Control administrativo</h3>
-            <p>Una visión global del sistema para supervisar usuarios, módulos y evolución futura del producto final.</p>
-        </article>
-    </div>
-</section>
-
-<section class="home-pro-section">
-    <h2 class="home-pro-section-title">Lo que ofrece ReparaYa</h2>
-    <p class="home-pro-section-subtitle">
-        La plataforma está orientada a una operativa más ordenada, clara y escalable, con una estructura pensada para unir administración, técnicos y clientes dentro de un mismo ecosistema digital.
-    </p>
-
-    <div class="home-pro-services">
-        <article class="home-pro-service">
-            <h4>Gestión de incidencias</h4>
-            <p>Registro y seguimiento de solicitudes con información estructurada y preparada para una gestión real del servicio.</p>
-        </article>
-
-        <article class="home-pro-service">
-            <h4>Asignación técnica</h4>
-            <p>Organización de técnicos y especialidades para facilitar futuras asignaciones y mejorar la trazabilidad operativa.</p>
-        </article>
-
-        <article class="home-pro-service">
-            <h4>Supervisión administrativa</h4>
-            <p>Panel centralizado para controlar usuarios, módulos internos, estructura general y evolución del sistema.</p>
-        </article>
-
-        <article class="home-pro-service">
-            <h4>Escalabilidad funcional</h4>
-            <p>Base preparada para integrar calendario, agenda técnica, estados de incidencia y nuevas partes del producto final.</p>
-        </article>
-    </div>
-</section>
-
-<section class="home-pro-section">
-    <h2 class="home-pro-section-title">Módulos principales</h2>
-    <p class="home-pro-section-subtitle">
-        La base actual del proyecto ya incorpora módulos estructurales que forman el núcleo del sistema y servirán de apoyo al resto de funcionalidades.
-    </p>
-
-    <div class="home-pro-modules">
-        <article class="home-pro-module">
-            <div class="home-pro-module-tag">Módulo · usuarios</div>
-            <h3>Usuarios y autenticación</h3>
-            <p>Registro, login, perfil y control de acceso por rol con una base segura y estructurada para la gestión completa de cuentas del sistema.</p>
-
-            <?php if ($usuarioSesion && $esAdmin): ?>
-                <a href="/public/usuarios">Ir al módulo de usuarios</a>
-            <?php elseif ($usuarioSesion): ?>
-                <a href="/public/perfil">Ir a mi perfil</a>
-            <?php else: ?>
-                <a href="/public/login">Acceder al sistema</a>
-            <?php endif; ?>
-        </article>
-
-        <article class="home-pro-module">
-            <div class="home-pro-module-tag">Módulo · técnicos</div>
-            <h3>Técnicos</h3>
-            <p>Administración de profesionales, disponibilidad y estructura técnica del servicio, preparada para futuras asignaciones y organización del trabajo.</p>
-
-            <?php if ($usuarioSesion && $esAdmin): ?>
-                <a href="/public/tecnicos">Ver técnicos</a>
-            <?php else: ?>
-                <a href="/public/login">Acceso protegido</a>
-            <?php endif; ?>
-        </article>
-
-        <article class="home-pro-module">
-            <div class="home-pro-module-tag">Módulo · especialidades</div>
-            <h3>Especialidades</h3>
-            <p>Catálogo organizado de especialidades para clasificar los servicios técnicos y mantener una estructura coherente en el sistema.</p>
-
-            <?php if ($usuarioSesion && $esAdmin): ?>
-                <a href="/public/especialidades">Ver especialidades</a>
-            <?php else: ?>
-                <a href="/public/login">Acceso protegido</a>
-            <?php endif; ?>
-        </article>
-    </div>
-</section>
-
-<section class="home-pro-info">
-    <article class="home-pro-info-card">
-        <h3>Base técnica del proyecto</h3>
-        <ul>
-            <li>Arquitectura MVC clara y preparada para integrar nuevas partes del producto sin perder coherencia.</li>
-            <li>Conexión centralizada a base de datos mediante PDO para una estructura más limpia y mantenible.</li>
-            <li>Separación de responsabilidades entre controladores, modelos y vistas para mejorar la organización del código.</li>
-            <li>Control de acceso mediante sesión y roles orientado a una aplicación con distintos perfiles de usuario.</li>
-            <li>Diseño visual homogéneo para reforzar la sensación de producto único, moderno y profesional.</li>
-            <li>Entorno de desarrollo desplegado con Docker y versionado con Git/GitHub para un flujo de trabajo realista.</li>
-        </ul>
-    </article>
-
-    <article class="home-pro-info-card">
-        <h3>Estado actual de la plataforma</h3>
-
-        <?php if (!$usuarioSesion): ?>
-            <div class="home-pro-status info">
-                Sesión no iniciada. Puedes acceder con una cuenta existente o registrarte para entrar a la plataforma y consultar sus módulos disponibles.
+            <div class="home-actions">
+                <a href="/public/admin" class="home-btn home-btn-primary">Abrir incidencias</a>
+                <a href="/public/admin/calendario" class="home-btn home-btn-secondary">Ver calendario operativo</a>
+                <a href="/public/usuarios" class="home-btn home-btn-secondary">Gestionar usuarios</a>
             </div>
-        <?php else: ?>
-            <div class="home-pro-status ok">
-                Sesión iniciada como <?= htmlspecialchars($usuarioSesion['nombre']) ?> (<?= htmlspecialchars($usuarioSesion['rol']) ?>).
+        </section>
+
+        <section class="home-grid-4">
+            <article class="home-stat-card">
+                <p class="home-stat-label">Avisos activos</p>
+                <p class="home-stat-value"><?= $dashboard['stats']['activas'] ?? 0 ?></p>
+                <p class="home-stat-help">Incidencias abiertas que siguen pendientes de atención o ejecución.</p>
+            </article>
+
+            <article class="home-stat-card">
+                <p class="home-stat-label">Pendientes</p>
+                <p class="home-stat-value"><?= $dashboard['stats']['pendientes'] ?? 0 ?></p>
+                <p class="home-stat-help">Solicitudes todavía sin cerrar y con necesidad de seguimiento administrativo.</p>
+            </article>
+
+            <article class="home-stat-card">
+                <p class="home-stat-label">Urgentes</p>
+                <p class="home-stat-value"><?= $dashboard['stats']['urgentes'] ?? 0 ?></p>
+                <p class="home-stat-help">Servicios marcados con prioridad urgente dentro del flujo actual.</p>
+            </article>
+
+            <article class="home-stat-card">
+                <p class="home-stat-label">Técnicos disponibles</p>
+                <p class="home-stat-value"><?= $dashboard['stats']['tecnicos_disponibles'] ?? 0 ?></p>
+                <p class="home-stat-help">Profesionales disponibles para nuevas asignaciones en el servicio.</p>
+            </article>
+        </section>
+
+        <section class="home-grid-3">
+            <article class="home-panel-card">
+                <div class="home-panel-kicker"><span class="home-dot home-dot-blue"></span>Incidencias</div>
+                <h3 class="home-panel-title">Operativa central del negocio</h3>
+                <p class="home-panel-text">Gestiona altas, estados, prioridades y técnicos desde un único punto de control más claro y eficiente.</p>
+                <a href="/public/admin" class="home-panel-link">Ir al panel de incidencias</a>
+            </article>
+
+            <article class="home-panel-card">
+                <div class="home-panel-kicker"><span class="home-dot home-dot-green"></span>Equipo técnico</div>
+                <h3 class="home-panel-title">Organización del personal</h3>
+                <p class="home-panel-text">Administra técnicos, disponibilidad, cuentas vinculadas y especialidades para una asignación más precisa.</p>
+                <a href="/public/tecnicos" class="home-panel-link">Gestionar técnicos</a>
+            </article>
+
+            <article class="home-panel-card">
+                <div class="home-panel-kicker"><span class="home-dot home-dot-gold"></span>Estructura del negocio</div>
+                <h3 class="home-panel-title">Usuarios y catálogo de servicios</h3>
+                <p class="home-panel-text">Mantén ordenadas las cuentas de acceso y la cartera de especialidades disponibles para el servicio.</p>
+                <a href="/public/especialidades" class="home-panel-link">Ver especialidades</a>
+            </article>
+        </section>
+
+        <section class="home-grid-2">
+            <article class="home-list-card">
+                <h3>Próximos servicios programados</h3>
+                <p style="margin-bottom:16px;">Resumen inmediato de las intervenciones próximas para anticipar carga de trabajo y prioridades.</p>
+
+                <?php if (empty($dashboard['proximas'])): ?>
+                    <div class="home-empty">No hay servicios próximos registrados en este momento.</div>
+                <?php else: ?>
+                    <div class="home-list">
+                        <?php foreach ($dashboard['proximas'] as $inc): ?>
+                            <a href="/public/admin" class="home-list-link">
+                                <div class="home-list-item">
+                                    <div class="home-list-top">
+                                        <span class="home-list-code"><?= htmlspecialchars($inc['localizador']) ?></span>
+                                        <span class="home-badge <?= homeUrgenciaClase($inc['tipo_urgencia'] ?? 'Estandar') ?>">
+                                            <span class="home-dot <?= ($inc['tipo_urgencia'] ?? '') === 'Urgente' ? 'home-dot-red' : 'home-dot-green' ?>"></span>
+                                            <?= htmlspecialchars(($inc['tipo_urgencia'] ?? '') === 'Urgente' ? 'Urgente' : 'Estándar') ?>
+                                        </span>
+                                    </div>
+                                    <div class="home-list-meta">
+                                        <strong><?= htmlspecialchars($inc['nombre_especialidad'] ?? 'Servicio') ?></strong> ·
+                                        <?= htmlspecialchars($inc['cliente_nombre'] ?? 'Cliente') ?><br>
+                                        <?= htmlspecialchars(homeFecha($inc['fecha_servicio'] ?? null)) ?>
+                                    </div>
+                                    <div class="home-list-cta">Abrir panel de incidencias</div>
+                                </div>
+                            </a>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+            </article>
+
+            <article class="home-highlight">
+                <h3>Lectura rápida del negocio</h3>
+                <p>Usuarios registrados: <strong><?= $dashboard['stats']['usuarios'] ?? 0 ?></strong></p>
+                <p>Técnicos dados de alta: <strong><?= $dashboard['stats']['tecnicos'] ?? 0 ?></strong></p>
+                <p>Especialidades configuradas: <strong><?= $dashboard['stats']['especialidades'] ?? 0 ?></strong></p>
+                <p>Servicios previstos para hoy: <strong><?= $dashboard['stats']['servicios_hoy'] ?? 0 ?></strong></p>
+                <p>Incidencias canceladas en histórico: <strong><?= $dashboard['stats']['canceladas'] ?? 0 ?></strong></p>
+            </article>
+        </section>
+
+    <?php elseif ($rolInicio === 'tecnico'): ?>
+        <section class="home-hero">
+            <div class="home-chip">Inicio técnico · Agenda operativa</div>
+            <h2 class="home-title">
+                Tu agenda técnica
+                <span>lista para una jornada más ágil y organizada</span>
+            </h2>
+            <p class="home-subtitle">
+                Consulta tus intervenciones asignadas, prioriza desplazamientos y accede de inmediato a la información esencial de cada servicio desde un inicio pensado para trabajar con rapidez, orden y claridad.
+            </p>
+
+            <div class="home-actions">
+                <a href="/public/mi-agenda" class="home-btn home-btn-primary">Abrir mi agenda</a>
+                <a href="/public/perfil" class="home-btn home-btn-secondary">Actualizar mi perfil</a>
             </div>
+        </section>
+
+        <?php if (!empty($dashboard['sin_vinculo'])): ?>
+            <section class="home-highlight">
+                <h3>Cuenta pendiente de vinculación</h3>
+                <p>Tu usuario tiene rol técnico, pero todavía no está asociado a una ficha del maestro de técnicos.</p>
+                <p>Para ver servicios asignados y utilizar correctamente tu inicio operativo, el administrador debe completar esa vinculación.</p>
+            </section>
+        <?php else: ?>
+            <section class="home-grid-4">
+                <article class="home-stat-card">
+                    <p class="home-stat-label">Servicios hoy</p>
+                    <p class="home-stat-value"><?= $dashboard['stats']['hoy'] ?? 0 ?></p>
+                    <p class="home-stat-help">Intervenciones planificadas para la jornada actual.</p>
+                </article>
+
+                <article class="home-stat-card">
+                    <p class="home-stat-label">Próximos servicios</p>
+                    <p class="home-stat-value"><?= $dashboard['stats']['proximas'] ?? 0 ?></p>
+                    <p class="home-stat-help">Avisos futuros pendientes de ejecución dentro de tu agenda.</p>
+                </article>
+
+                <article class="home-stat-card">
+                    <p class="home-stat-label">Urgentes</p>
+                    <p class="home-stat-value"><?= $dashboard['stats']['urgentes'] ?? 0 ?></p>
+                    <p class="home-stat-help">Intervenciones con prioridad urgente asignadas a tu cuenta técnica.</p>
+                </article>
+
+                <article class="home-stat-card">
+                    <p class="home-stat-label">Finalizadas</p>
+                    <p class="home-stat-value"><?= $dashboard['stats']['finalizadas'] ?? 0 ?></p>
+                    <p class="home-stat-help">Servicios cerrados visibles como histórico operativo.</p>
+                </article>
+            </section>
+
+            <section class="home-grid-2">
+                <article class="home-list-card">
+                    <h3>Siguientes intervenciones</h3>
+                    <p style="margin-bottom:16px;">Tus próximos servicios programados en orden cronológico.</p>
+
+                    <?php if (empty($dashboard['siguientes'])): ?>
+                        <div class="home-empty">No tienes intervenciones próximas asignadas en este momento.</div>
+                    <?php else: ?>
+                        <div class="home-list">
+                            <?php foreach ($dashboard['siguientes'] as $inc): ?>
+                                <a href="/public/mi-agenda" class="home-list-link">
+                                    <div class="home-list-item">
+                                        <div class="home-list-top">
+                                            <span class="home-list-code"><?= htmlspecialchars($inc['localizador']) ?></span>
+                                            <span class="home-badge <?= homeUrgenciaClase($inc['tipo_urgencia'] ?? 'Estandar') ?>">
+                                                <span class="home-dot <?= ($inc['tipo_urgencia'] ?? '') === 'Urgente' ? 'home-dot-red' : 'home-dot-green' ?>"></span>
+                                                <?= htmlspecialchars(($inc['tipo_urgencia'] ?? '') === 'Urgente' ? 'Urgente' : 'Estándar') ?>
+                                            </span>
+                                        </div>
+                                        <div class="home-list-meta">
+                                            <strong><?= htmlspecialchars($inc['nombre_especialidad'] ?? 'Servicio') ?></strong> ·
+                                            <?= htmlspecialchars($inc['cliente_nombre'] ?? 'Cliente') ?><br>
+                                            <?= htmlspecialchars(homeFecha($inc['fecha_servicio'] ?? null)) ?><br>
+                                            <?= htmlspecialchars($inc['direccion'] ?? 'Dirección no disponible') ?>
+                                        </div>
+                                        <div class="home-list-cta">Abrir agenda operativa</div>
+                                    </div>
+                                </a>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                </article>
+
+                <article class="home-highlight">
+                    <h3>Acceso directo a tu operativa diaria</h3>
+                    <p>Este inicio está pensado para ayudarte a trabajar con mayor rapidez, menos fricción y una mejor visión de cada desplazamiento.</p>
+                    <p><strong>Técnico:</strong> <?= htmlspecialchars($dashboard['tecnico']['nombre_completo'] ?? '') ?></p>
+                    <p><strong>Especialidad:</strong> <?= htmlspecialchars($dashboard['tecnico']['nombre_especialidad'] ?? 'No disponible') ?></p>
+                    <p>Todo lo esencial para tu jornada, concentrado en un único espacio de trabajo.</p>
+                </article>
+            </section>
         <?php endif; ?>
 
-        <div class="home-pro-status info">
-            ReparaYa ya dispone de una base visual y funcional sólida, preparada para seguir integrando la gestión completa de avisos, calendario, paneles específicos y lógica de negocio del producto final.
-        </div>
-    </article>
-</section>
+    <?php elseif ($rolInicio === 'particular'): ?>
+        <section class="home-hero">
+            <div class="home-chip">Área cliente · Servicio y seguimiento</div>
+            <h2 class="home-title">
+                Gestiona tus incidencias
+                <span>con seguimiento profesional y total claridad</span>
+            </h2>
+            <p class="home-subtitle">
+                Registra nuevos servicios, revisa el estado de cada aviso y mantén toda tu información organizada desde un espacio diseñado para ofrecer una experiencia más cómoda, clara y profesional.
+            </p>
+
+            <div class="home-actions">
+                <a href="/public/nueva-solicitud" class="home-btn home-btn-primary">Crear nueva solicitud</a>
+                <a href="/public/mis-avisos" class="home-btn home-btn-secondary">Ver mis avisos</a>
+                <a href="/public/perfil" class="home-btn home-btn-secondary">Gestionar mi perfil</a>
+            </div>
+        </section>
+
+        <section class="home-grid-4">
+            <article class="home-stat-card">
+                <p class="home-stat-label">Avisos registrados</p>
+                <p class="home-stat-value"><?= $dashboard['stats']['total'] ?? 0 ?></p>
+                <p class="home-stat-help">Número total de solicitudes creadas desde tu cuenta.</p>
+            </article>
+
+            <article class="home-stat-card">
+                <p class="home-stat-label">Activos</p>
+                <p class="home-stat-value"><?= $dashboard['stats']['activas'] ?? 0 ?></p>
+                <p class="home-stat-help">Avisos que siguen abiertos o en proceso de atención.</p>
+            </article>
+
+            <article class="home-stat-card">
+                <p class="home-stat-label">Finalizados</p>
+                <p class="home-stat-value"><?= $dashboard['stats']['finalizadas'] ?? 0 ?></p>
+                <p class="home-stat-help">Intervenciones completadas y ya cerradas dentro del sistema.</p>
+            </article>
+
+            <article class="home-stat-card">
+                <p class="home-stat-label">Urgentes</p>
+                <p class="home-stat-value"><?= $dashboard['stats']['urgentes'] ?? 0 ?></p>
+                <p class="home-stat-help">Solicitudes urgentes registradas y todavía visibles en tu historial.</p>
+            </article>
+        </section>
+
+        <section class="home-client-stack">
+            <article class="home-client-section">
+                <div class="home-client-head">
+                    <div class="home-client-kicker">
+                        <span class="home-dot home-dot-blue"></span>
+                        Agenda próxima
+                    </div>
+                    <h3 class="home-client-title">Tus próximos servicios programados</h3>
+                    <p class="home-client-text">
+                        Aquí tienes los avisos más cercanos con acceso directo al registro exacto de cada incidencia para que puedas revisar su seguimiento completo sin perder tiempo buscando dentro del panel.
+                    </p>
+                </div>
+
+                <?php if (empty($dashboard['proximos'])): ?>
+                    <div class="home-empty">No tienes avisos futuros programados en este momento.</div>
+                <?php else: ?>
+                    <div class="home-client-agenda-grid">
+                        <?php foreach ($dashboard['proximos'] as $aviso): ?>
+                            <a href="/public/mis-avisos#aviso-<?= htmlspecialchars($aviso['id']) ?>" class="home-client-agenda-card">
+                                <div class="home-client-agenda-top">
+                                    <span class="home-client-agenda-code"><?= htmlspecialchars($aviso['localizador']) ?></span>
+                                    <span class="home-badge <?= homeEstadoClase($aviso['estado'] ?? 'Pendiente') ?>">
+                                        <span class="home-dot <?= ($aviso['estado'] ?? '') === 'Asignada' ? 'home-dot-blue' : (($aviso['estado'] ?? '') === 'Finalizada' ? 'home-dot-green' : (($aviso['estado'] ?? '') === 'Cancelada' ? 'home-dot-red' : 'home-dot-gold')) ?>"></span>
+                                        <?= htmlspecialchars($aviso['estado'] ?? 'Pendiente') ?>
+                                    </span>
+                                </div>
+
+                                <div class="home-client-agenda-meta">
+                                    <strong><?= htmlspecialchars($aviso['nombre_especialidad'] ?? 'Servicio') ?></strong><br>
+                                    <?= htmlspecialchars(homeFecha($aviso['fecha_servicio'] ?? null)) ?><br>
+                                    <?= htmlspecialchars($aviso['direccion'] ?? 'Dirección no disponible') ?>
+                                </div>
+
+                                <div class="home-client-agenda-cta">Abrir este aviso concreto</div>
+                            </a>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+            </article>
+
+            <article class="home-client-section recent">
+                <div class="home-client-head">
+                    <div class="home-client-kicker recent">
+                        <span class="home-dot home-dot-green"></span>
+                        Actividad reciente
+                    </div>
+                    <h3 class="home-client-title">Últimos movimientos de tu cuenta</h3>
+                    <p class="home-client-text">
+                        Este bloque reúne tus avisos más recientes para que identifiques rápidamente qué has solicitado, qué urgencia tiene cada servicio y qué técnico figura actualmente como referencia del aviso.
+                    </p>
+                </div>
+
+                <?php if (empty($dashboard['recientes'])): ?>
+                    <div class="home-empty">Aún no hay actividad registrada en tu cuenta.</div>
+                <?php else: ?>
+                    <div class="home-client-recent-list">
+                        <?php foreach ($dashboard['recientes'] as $aviso): ?>
+                            <a href="/public/mis-avisos#aviso-<?= htmlspecialchars($aviso['id']) ?>" class="home-client-recent-row">
+                                <div class="home-client-recent-main">
+                                    <div class="home-client-recent-title"><?= htmlspecialchars($aviso['localizador']) ?></div>
+                                    <div class="home-client-recent-meta">
+                                        <?= htmlspecialchars($aviso['nombre_especialidad'] ?? 'Servicio') ?> ·
+                                        <?= htmlspecialchars($aviso['tecnico_nombre'] ?: 'Pendiente de asignación') ?><br>
+                                        <?= htmlspecialchars(homeFecha($aviso['fecha_servicio'] ?? null)) ?>
+                                    </div>
+                                </div>
+
+                                <span class="home-badge <?= homeUrgenciaClase($aviso['tipo_urgencia'] ?? 'Estandar') ?>">
+                                    <span class="home-dot <?= ($aviso['tipo_urgencia'] ?? '') === 'Urgente' ? 'home-dot-red' : 'home-dot-green' ?>"></span>
+                                    <?= htmlspecialchars(($aviso['tipo_urgencia'] ?? '') === 'Urgente' ? 'Urgente' : 'Estándar') ?>
+                                </span>
+
+                                <span class="home-client-recent-cta">Ver aviso exacto</span>
+                            </a>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+            </article>
+        </section>
+
+    <?php else: ?>
+        <section class="home-hero">
+            <div class="home-chip">Asistencia técnica doméstica · Gestión integral</div>
+            <h2 class="home-title">
+                La plataforma profesional
+                <span>para coordinar asistencia técnica con más control y mejor imagen</span>
+            </h2>
+            <p class="home-subtitle">
+                ReparaYa reúne en un único entorno la atención al cliente, la coordinación operativa y la gestión técnica para ofrecer un servicio más ordenado, más rápido y mucho más profesional.
+            </p>
+
+            <div class="home-actions">
+                <a href="/public/login" class="home-btn home-btn-primary">Acceder a la plataforma</a>
+                <a href="/public/register" class="home-btn home-btn-secondary">Crear cuenta de cliente</a>
+            </div>
+        </section>
+
+        <section class="home-grid-3">
+            <article class="home-service-card dark">
+                <h3>Más orden en cada servicio</h3>
+                <p>Centraliza incidencias, estados, equipo técnico y seguimiento del cliente en una misma plataforma clara y bien estructurada.</p>
+            </article>
+
+            <article class="home-service-card dark">
+                <h3>Una imagen más profesional</h3>
+                <p>Ofrece una experiencia moderna, cuidada y coherente para cliente, técnico y administración desde el primer acceso.</p>
+            </article>
+
+            <article class="home-service-card dark">
+                <h3>Mayor control operativo</h3>
+                <p>Mejora la coordinación diaria del servicio con una visión unificada de avisos, agenda, prioridades y recursos disponibles.</p>
+            </article>
+        </section>
+
+        <section class="home-grid-2">
+            <article class="home-list-card">
+                <h3>Por qué elegir ReparaYa</h3>
+                <div class="home-marketing-list">
+                    <div class="home-marketing-row">
+                        <strong>Convierte la gestión del servicio en una ventaja competitiva.</strong><br>
+                        Una operativa más clara transmite confianza, orden y profesionalidad desde la primera solicitud.
+                    </div>
+                    <div class="home-marketing-row">
+                        <strong>Mejora la experiencia de cliente y del equipo.</strong><br>
+                        Toda la información importante queda accesible, organizada y preparada para trabajar con más fluidez.
+                    </div>
+                    <div class="home-marketing-row">
+                        <strong>Refuerza la imagen de tu negocio.</strong><br>
+                        Una plataforma bien diseñada no solo organiza el trabajo: también proyecta una marca más sólida y moderna.
+                    </div>
+                </div>
+            </article>
+
+            <article class="home-highlight">
+                <h3>Haz que tu servicio se vea tan profesional como realmente es</h3>
+                <p>ReparaYa está pensada para negocios que quieren ofrecer una atención más seria, más ordenada y más convincente.</p>
+                <p>Si buscas una herramienta que ayude a gestionar mejor el día a día y al mismo tiempo transmita una imagen de calidad, este es el punto de partida adecuado.</p>
+                <p>Accede o regístrate para descubrir una forma más profesional de organizar tu servicio técnico.</p>
+            </article>
+        </section>
+    <?php endif; ?>
+
+</div>

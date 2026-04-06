@@ -136,7 +136,7 @@
         display: flex;
         flex-wrap: wrap;
         gap: 10px;
-        margin-bottom: 16px;
+        margin-bottom: 12px;
     }
 
     .tec-pill {
@@ -151,6 +151,16 @@
         color: #1d4ed8;
         font-weight: 700;
         font-size: 0.9rem;
+    }
+
+    .tec-account {
+        margin-bottom: 16px;
+        color: #334155;
+        line-height: 1.65;
+    }
+
+    .tec-account strong {
+        color: #0f172a;
     }
 
     .tec-actions {
@@ -194,7 +204,7 @@
         <div class="tec-kicker">Módulo de administración técnica</div>
         <h2 class="tec-title">Gestión de técnicos</h2>
         <p class="tec-subtitle">
-            Administra profesionales, disponibilidad y especialidades desde una vista más clara, ordenada y preparada para futuras asignaciones operativas.
+            Administra profesionales, disponibilidad, especialidades y la cuenta real de acceso de cada técnico para preparar correctamente su futura agenda de trabajo.
         </p>
     </div>
 
@@ -238,6 +248,15 @@
 
                 <div class="tec-meta">
                     <span class="tec-pill">Especialidad: <?= htmlspecialchars($tecnico['nombre_especialidad'] ?? 'Sin especialidad') ?></span>
+                </div>
+
+                <div class="tec-account">
+                    <strong>Cuenta vinculada:</strong>
+                    <?php if (!empty($tecnico['usuario_email'])): ?>
+                        <?= htmlspecialchars($tecnico['usuario_nombre'] . ' (' . $tecnico['usuario_email'] . ')') ?>
+                    <?php else: ?>
+                        <span style="color:#b91c1c;font-weight:700;">Sin vincular</span>
+                    <?php endif; ?>
                 </div>
 
                 <div class="tec-actions">

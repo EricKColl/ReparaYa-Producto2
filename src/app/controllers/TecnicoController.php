@@ -3,6 +3,8 @@
 require_once __DIR__ . '/../../core/Controller.php';
 require_once __DIR__ . '/../models/Tecnico.php';
 require_once __DIR__ . '/../models/Especialidad.php';
+require_once __DIR__ . '/../models/Usuario.php';
+require_once __DIR__ . '/../models/Incidencia.php';
 
 class TecnicoController extends Controller
 {
@@ -24,11 +26,12 @@ class TecnicoController extends Controller
         $this->requireAdmin();
 
         $especialidadModel = new Especialidad();
-        $especialidades = $especialidadModel->getAll();
+        $usuarioModel = new Usuario();
 
         $this->render('tecnicos/create', [
             'title' => 'Crear técnico - ReparaYa',
-            'especialidades' => $especialidades
+            'especialidades' => $especialidadModel->getAll(),
+            'usuariosTecnicos' => $usuarioModel->getUsuariosTecnicosDisponibles()
         ]);
     }
 
@@ -41,27 +44,42 @@ class TecnicoController extends Controller
             exit;
         }
 
+        $usuarioId = (int) ($_POST['usuario_id'] ?? 0);
         $nombreCompleto = trim($_POST['nombre_completo'] ?? '');
         $especialidadId = (int) ($_POST['especialidad_id'] ?? 0);
         $disponible = isset($_POST['disponible']) ? 1 : 0;
 
-        if ($nombreCompleto === '' || $especialidadId <= 0) {
+        if ($usuarioId <= 0 || $nombreCompleto === '' || $especialidadId <= 0) {
             $especialidadModel = new Especialidad();
-            $especialidades = $especialidadModel->getAll();
+            $usuarioModel = new Usuario();
 
             $this->render('tecnicos/create', [
                 'title' => 'Crear técnico - ReparaYa',
-                'error' => 'El nombre y la especialidad son obligatorios.',
-                'especialidades' => $especialidades
+                'error' => 'La cuenta de usuario técnico, el nombre y la especialidad son obligatorios.',
+                'especialidades' => $especialidadModel->getAll(),
+                'usuariosTecnicos' => $usuarioModel->getUsuariosTecnicosDisponibles()
             ]);
             return;
         }
 
         $tecnicoModel = new Tecnico();
-        $tecnicoModel->create($nombreCompleto, $especialidadId, $disponible);
 
-        header('Location: /public/tecnicos?ok=creado');
-        exit;
+        try {
+            $tecnicoModel->create($usuarioId, $nombreCompleto, $especialidadId, $disponible);
+            header('Location: /public/tecnicos?ok=creado');
+            exit;
+        } catch (PDOException $e) {
+            $especialidadModel = new Especialidad();
+            $usuarioModel = new Usuario();
+
+            $this->render('tecnicos/create', [
+                'title' => 'Crear técnico - ReparaYa',
+                'error' => 'Ese usuario técnico ya está vinculado a otra ficha de técnico.',
+                'especialidades' => $especialidadModel->getAll(),
+                'usuariosTecnicos' => $usuarioModel->getUsuariosTecnicosDisponibles()
+            ]);
+            return;
+        }
     }
 
     public function edit(): void
@@ -84,12 +102,13 @@ class TecnicoController extends Controller
         }
 
         $especialidadModel = new Especialidad();
-        $especialidades = $especialidadModel->getAll();
+        $usuarioModel = new Usuario();
 
         $this->render('tecnicos/edit', [
             'title' => 'Editar técnico - ReparaYa',
             'tecnico' => $tecnico,
-            'especialidades' => $especialidades
+            'especialidades' => $especialidadModel->getAll(),
+            'usuariosTecnicos' => $usuarioModel->getUsuariosTecnicosDisponibles($id)
         ]);
     }
 
@@ -103,6 +122,7 @@ class TecnicoController extends Controller
         }
 
         $id = (int) ($_POST['id'] ?? 0);
+        $usuarioId = (int) ($_POST['usuario_id'] ?? 0);
         $nombreCompleto = trim($_POST['nombre_completo'] ?? '');
         $especialidadId = (int) ($_POST['especialidad_id'] ?? 0);
         $disponible = isset($_POST['disponible']) ? 1 : 0;
@@ -112,14 +132,15 @@ class TecnicoController extends Controller
             exit;
         }
 
-        if ($nombreCompleto === '' || $especialidadId <= 0) {
+        if ($usuarioId <= 0 || $nombreCompleto === '' || $especialidadId <= 0) {
             $tecnicoModel = new Tecnico();
             $tecnico = $tecnicoModel->getById($id);
 
             $especialidadModel = new Especialidad();
-            $especialidades = $especialidadModel->getAll();
+            $usuarioModel = new Usuario();
 
             if ($tecnico) {
+                $tecnico['usuario_id'] = $usuarioId;
                 $tecnico['nombre_completo'] = $nombreCompleto;
                 $tecnico['especialidad_id'] = $especialidadId;
                 $tecnico['disponible'] = $disponible;
@@ -127,18 +148,42 @@ class TecnicoController extends Controller
 
             $this->render('tecnicos/edit', [
                 'title' => 'Editar técnico - ReparaYa',
-                'error' => 'El nombre y la especialidad son obligatorios.',
+                'error' => 'La cuenta de usuario técnico, el nombre y la especialidad son obligatorios.',
                 'tecnico' => $tecnico,
-                'especialidades' => $especialidades
+                'especialidades' => $especialidadModel->getAll(),
+                'usuariosTecnicos' => $usuarioModel->getUsuariosTecnicosDisponibles($id)
             ]);
             return;
         }
 
         $tecnicoModel = new Tecnico();
-        $tecnicoModel->update($id, $nombreCompleto, $especialidadId, $disponible);
 
-        header('Location: /public/tecnicos?ok=actualizado');
-        exit;
+        try {
+            $tecnicoModel->update($id, $usuarioId, $nombreCompleto, $especialidadId, $disponible);
+            header('Location: /public/tecnicos?ok=actualizado');
+            exit;
+        } catch (PDOException $e) {
+            $tecnico = $tecnicoModel->getById($id);
+
+            $especialidadModel = new Especialidad();
+            $usuarioModel = new Usuario();
+
+            if ($tecnico) {
+                $tecnico['usuario_id'] = $usuarioId;
+                $tecnico['nombre_completo'] = $nombreCompleto;
+                $tecnico['especialidad_id'] = $especialidadId;
+                $tecnico['disponible'] = $disponible;
+            }
+
+            $this->render('tecnicos/edit', [
+                'title' => 'Editar técnico - ReparaYa',
+                'error' => 'Ese usuario técnico ya está vinculado a otra ficha de técnico.',
+                'tecnico' => $tecnico,
+                'especialidades' => $especialidadModel->getAll(),
+                'usuariosTecnicos' => $usuarioModel->getUsuariosTecnicosDisponibles($id)
+            ]);
+            return;
+        }
     }
 
     public function delete(): void
@@ -167,5 +212,36 @@ class TecnicoController extends Controller
             header('Location: /public/tecnicos?error=en_uso');
             exit;
         }
+    }
+
+    public function agenda(): void
+    {
+        $this->requireTecnico();
+
+        $usuarioId = (int) ($_SESSION['usuario']['id'] ?? 0);
+
+        $tecnicoModel = new Tecnico();
+        $incidenciaModel = new Incidencia();
+
+        $tecnico = $tecnicoModel->getByUsuarioId($usuarioId);
+
+        if (!$tecnico) {
+            $this->render('tecnicos/agenda', [
+                'title' => 'Mi agenda - ReparaYa',
+                'tecnico' => null,
+                'incidencias' => [],
+                'sinVinculo' => true
+            ]);
+            return;
+        }
+
+        $incidencias = $incidenciaModel->getByTecnicoId((int) $tecnico['id']);
+
+        $this->render('tecnicos/agenda', [
+            'title' => 'Mi agenda - ReparaYa',
+            'tecnico' => $tecnico,
+            'incidencias' => $incidencias,
+            'sinVinculo' => false
+        ]);
     }
 }
