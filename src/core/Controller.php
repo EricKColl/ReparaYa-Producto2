@@ -31,6 +31,26 @@ class Controller
         }
     }
 
+    protected function requireTecnico(): void
+    {
+        $this->requireLogin();
+
+        if (($_SESSION['usuario']['rol'] ?? '') !== 'tecnico') {
+            header('Location: /public');
+            exit;
+        }
+    }
+
+    protected function requireParticular(): void
+    {
+        $this->requireLogin();
+
+        if (($_SESSION['usuario']['rol'] ?? '') !== 'particular') {
+            header('Location: /public');
+            exit;
+        }
+    }
+
     protected function redirectIfLoggedIn(): void
     {
         if (isset($_SESSION['usuario'])) {

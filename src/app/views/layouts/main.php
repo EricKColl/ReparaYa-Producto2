@@ -297,6 +297,7 @@ $usuarioSesion = $_SESSION['usuario'] ?? null;
         input[type="number"],
         input[type="date"],
         input[type="time"],
+        input[type="datetime-local"],
         select,
         textarea {
             width: 100%;
@@ -395,9 +396,7 @@ $usuarioSesion = $_SESSION['usuario'] ?? null;
         }
 
         @keyframes rp-glow {
-
-            0%,
-            100% {
+            0%, 100% {
                 transform: scale(1);
                 opacity: 0.92;
             }
@@ -409,9 +408,7 @@ $usuarioSesion = $_SESSION['usuario'] ?? null;
         }
 
         @keyframes rp-dot {
-
-            0%,
-            100% {
+            0%, 100% {
                 opacity: 1;
             }
 
@@ -464,6 +461,7 @@ $usuarioSesion = $_SESSION['usuario'] ?? null;
             input[type="number"],
             input[type="date"],
             input[type="time"],
+            input[type="datetime-local"],
             select,
             textarea {
                 max-width: 100%;
@@ -478,13 +476,13 @@ $usuarioSesion = $_SESSION['usuario'] ?? null;
             <div class="rp-header-inner">
                 <div class="rp-brand-block">
                     <div class="rp-system-chip">
-                        Back-End Producto 2
+                        Plataforma integral de asistencia técnica
                     </div>
 
                     <h1 class="rp-brand-title"><?= htmlspecialchars($appConfig['name']) ?></h1>
 
                     <p class="rp-brand-subtitle">
-                        Plataforma tecnológica para la gestión de reparaciones domésticas, asistencias técnicas y control operativo del servicio.
+                        Gestión centralizada de incidencias, coordinación técnica, atención al cliente y control operativo del servicio en un único entorno profesional.
                     </p>
                 </div>
 
@@ -500,6 +498,11 @@ $usuarioSesion = $_SESSION['usuario'] ?? null;
                                 <a href="/public/usuarios">Usuarios</a>
                                 <a href="/public/tecnicos">Técnicos</a>
                                 <a href="/public/especialidades">Especialidades</a>
+                            <?php elseif (($usuarioSesion['rol'] ?? '') === 'tecnico'): ?>
+                                <a href="/public/mi-agenda">Mi agenda</a>
+                            <?php elseif (($usuarioSesion['rol'] ?? '') === 'particular'): ?>
+                                <a href="/public/mis-avisos">Mis avisos</a>
+                                <a href="/public/nueva-solicitud">Nueva solicitud</a>
                             <?php endif; ?>
 
                             <a href="/public/logout">Cerrar sesión</a>
@@ -511,7 +514,16 @@ $usuarioSesion = $_SESSION['usuario'] ?? null;
 
                     <?php if ($usuarioSesion): ?>
                         <div class="rp-nav-user">
-                            Hola, <?= htmlspecialchars($usuarioSesion['nombre']) ?> (<?= htmlspecialchars($usuarioSesion['rol']) ?>)
+                            <?php
+                            $rolTexto = $usuarioSesion['rol'] ?? '';
+
+                            if ($rolTexto === 'tecnico') {
+                                $rolTexto = 'técnico';
+                            } elseif ($rolTexto === 'particular') {
+                                $rolTexto = 'cliente';
+                            }
+                            ?>
+                            Hola, <?= htmlspecialchars($usuarioSesion['nombre']) ?> (<?= htmlspecialchars($rolTexto) ?>)
                         </div>
                     <?php endif; ?>
                 </div>

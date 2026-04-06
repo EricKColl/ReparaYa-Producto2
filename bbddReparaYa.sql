@@ -54,8 +54,9 @@ CREATE TABLE `incidencias` (
   `especialidad_id` int NOT NULL,
   `descripcion` text NOT NULL,
   `direccion` varchar(255) NOT NULL,
+  `telefono_contacto` varchar(20) NOT NULL,
   `fecha_servicio` datetime NOT NULL,
-  `tipo_urgencia` enum('EstÃ¡ndar','Urgente') DEFAULT 'EstÃ¡ndar',
+  `tipo_urgencia` enum('Estandar','Urgente') DEFAULT 'Estandar',
   `estado` enum('Pendiente','Asignada','Finalizada','Cancelada') DEFAULT 'Pendiente',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

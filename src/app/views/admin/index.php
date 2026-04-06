@@ -7,7 +7,9 @@
             'creada'      => 'Incidencia creada.',
             'actualizada' => 'Incidencia actualizada.',
             'cancelada'   => 'Incidencia cancelada.',
-            'asignado'    => 'Técnico asignado.'
+            'eliminada'   => 'Incidencia eliminada definitivamente.',
+            'asignado'    => 'Técnico asignado.',
+            'error'       => 'No se pudo completar la operación.'
         ];
         echo htmlspecialchars($msgs[$_GET['ok']] ?? 'Operación completada.');
         ?>
@@ -34,7 +36,12 @@
     </thead>
     <tbody>
         <?php foreach ($incidencias as $inc): ?>
-            <tr style="border-bottom:1px solid #e2e8f0;">
+            <?php
+                $filaStyle = $inc['estado'] === 'Cancelada'
+                    ? 'background:#fff1f2;border-bottom:1px solid #fecdd3;'
+                    : 'border-bottom:1px solid #e2e8f0;';
+            ?>
+            <tr style="<?= $filaStyle ?>">
 
                 <td style="padding:10px 12px;font-weight:700;">
                     <?= htmlspecialchars($inc['localizador']) ?>
@@ -61,21 +68,26 @@
                 </td>
 
                 <td style="padding:10px 12px;">
-                    <?= htmlspecialchars($inc['estado']) ?>
+                    <?php if ($inc['estado'] === 'Pendiente'): ?>
+                        <span style="background:#fef3c7;color:#92400e;padding:3px 8px;border-radius:8px;font-weight:700;">Pendiente</span>
+                    <?php elseif ($inc['estado'] === 'Asignada'): ?>
+                        <span style="background:#dbeafe;color:#1d4ed8;padding:3px 8px;border-radius:8px;font-weight:700;">Asignada</span>
+                    <?php elseif ($inc['estado'] === 'Finalizada'): ?>
+                        <span style="background:#dcfce7;color:#166534;padding:3px 8px;border-radius:8px;font-weight:700;">Finalizada</span>
+                    <?php else: ?>
+                        <span style="background:#fee2e2;color:#b91c1c;padding:3px 8px;border-radius:8px;font-weight:700;">Cancelada</span>
+                    <?php endif; ?>
                 </td>
 
                 <td style="padding:6px 12px;">
                     <?php if ($inc['estado'] !== 'Cancelada' && $inc['estado'] !== 'Finalizada'): ?>
                         <?php $tecnicosDisp = $tecnicosPorEspecialidad[$inc['especialidad_id']] ?? []; ?>
-                        <form action="/public/admin/asignar" method="POST"
-                            style="display:flex;gap:6px;align-items:center;">
+                        <form action="/public/admin/asignar" method="POST" style="display:flex;gap:6px;align-items:center;">
                             <input type="hidden" name="incidencia_id" value="<?= $inc['id'] ?>">
-                            <select name="tecnico_id"
-                                style="margin:0;padding:6px 10px;font-size:0.9rem;width:auto;max-width:200px;">
+                            <select name="tecnico_id" style="margin:0;padding:6px 10px;font-size:0.9rem;width:auto;max-width:200px;">
                                 <option value="">— Sin asignar —</option>
                                 <?php foreach ($tecnicosDisp as $t): ?>
-                                    <option value="<?= $t['id'] ?>"
-                                        <?= $inc['tecnico_id'] == $t['id'] ? 'selected' : '' ?>>
+                                    <option value="<?= $t['id'] ?>" <?= $inc['tecnico_id'] == $t['id'] ? 'selected' : '' ?>>
                                         <?= htmlspecialchars($t['nombre_completo']) ?>
                                     </option>
                                 <?php endforeach; ?>
@@ -92,17 +104,30 @@
                         <?php endif; ?>
                     <?php else: ?>
                         <span style="color:#94a3b8;font-size:0.9rem;">
-                            <?= htmlspecialchars($inc['tecnico_nombre'] ?? '—') ?>
+                            <?= htmlspecialchars($inc['tecnico_nombre'] ?: '—') ?>
                         </span>
                     <?php endif; ?>
                 </td>
 
-                <td style="padding:10px 12px;">
-                    <a href="/public/admin/edit?id=<?= $inc['id'] ?>" class="action-link">Editar</a>
-                    <form action="/public/admin/delete" method="POST" class="inline-form"
-                        onsubmit="return confirm('¿Cancelar esta incidencia?')">
+                <td style="padding:10px 12px; white-space:nowrap;">
+                    <a href="/public/admin/edit?id=<?= $inc['id'] ?>" class="action-link" style="margin-right:10px;">Editar</a>
+
+                    <?php if ($inc['estado'] !== 'Cancelada'): ?>
+                        <form action="/public/admin/delete" method="POST" class="inline-form"
+                              onsubmit="return confirm('¿Cancelar esta incidencia?')"
+                              style="display:inline-block;margin-right:8px;">
+                            <input type="hidden" name="id" value="<?= $inc['id'] ?>">
+                            <button type="submit">Cancelar</button>
+                        </form>
+                    <?php else: ?>
+                        <span style="display:inline-block;margin-right:10px;color:#b91c1c;font-weight:700;">Ya cancelada</span>
+                    <?php endif; ?>
+
+                    <form action="/public/admin/destroy" method="POST" class="inline-form"
+                          onsubmit="return confirm('¿Eliminar definitivamente esta incidencia? Esta acción no se puede deshacer.')"
+                          style="display:inline-block;">
                         <input type="hidden" name="id" value="<?= $inc['id'] ?>">
-                        <button type="submit">Cancelar</button>
+                        <button type="submit" style="background:#7f1d1d;">Eliminar</button>
                     </form>
                 </td>
 

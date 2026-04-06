@@ -8,6 +8,16 @@ require_once __DIR__ . '/../models/Usuario.php';
 
 class AdminController extends Controller
 {
+    private function normalizarTipoUrgencia(string $tipo): string
+    {
+        return $tipo === 'Urgente' ? 'Urgente' : 'Estandar';
+    }
+
+    private function normalizarTelefono(string $telefono): string
+    {
+        return trim($telefono);
+    }
+
     public function index(): void
     {
         $this->requireAdmin();
@@ -15,7 +25,7 @@ class AdminController extends Controller
         $incidenciaModel = new Incidencia();
         $tecnicoModel    = new Tecnico();
 
-        $incidencias = $incidenciaModel->getAll();
+        $incidencias = $incidenciaModel->getAll(true);
 
         $tecnicosPorEspecialidad = [];
         foreach ($incidencias as $inc) {
@@ -40,9 +50,9 @@ class AdminController extends Controller
         $usuarioModel      = new Usuario();
 
         $this->render('admin/create', [
-            'title'         => 'Nueva Incidencia - ReparaYa',
+            'title'          => 'Nueva Incidencia - ReparaYa',
             'especialidades' => $especialidadModel->getAll(),
-            'clientes'      => $usuarioModel->getClientes(),
+            'clientes'       => $usuarioModel->getClientes(),
         ]);
     }
 
@@ -50,34 +60,50 @@ class AdminController extends Controller
     {
         $this->requireAdmin();
 
-        $clienteId    = (int) ($_POST['cliente_id']      ?? 0);
+        $clienteId    = (int) ($_POST['cliente_id'] ?? 0);
         $especialidad = (int) ($_POST['especialidad_id'] ?? 0);
-        $descripcion  = trim($_POST['descripcion']       ?? '');
-        $direccion    = trim($_POST['direccion']          ?? '');
-        $fecha        = trim($_POST['fecha_servicio']     ?? '');
-        $urgencia     = $_POST['tipo_urgencia']           ?? 'Estandar';
+        $descripcion  = trim($_POST['descripcion'] ?? '');
+        $direccion    = trim($_POST['direccion'] ?? '');
+        $telefono     = $this->normalizarTelefono($_POST['telefono_contacto'] ?? '');
+        $fecha        = trim($_POST['fecha_servicio'] ?? '');
+        $urgencia     = $this->normalizarTipoUrgencia($_POST['tipo_urgencia'] ?? 'Estandar');
 
-        if (!$clienteId || !$especialidad || !$descripcion || !$direccion || !$fecha) {
+        if (!$clienteId || !$especialidad || !$descripcion || !$direccion || !$telefono || !$fecha) {
             $especialidadModel = new Especialidad();
             $usuarioModel      = new Usuario();
+
             $this->render('admin/create', [
-                'title'         => 'Nueva Incidencia - ReparaYa',
-                'error'         => 'Todos los campos son obligatorios.',
+                'title'          => 'Nueva Incidencia - ReparaYa',
+                'error'          => 'Todos los campos son obligatorios.',
                 'especialidades' => $especialidadModel->getAll(),
-                'clientes'      => $usuarioModel->getClientes(),
+                'clientes'       => $usuarioModel->getClientes(),
             ]);
             return;
         }
 
         $incidenciaModel = new Incidencia();
-        $incidenciaModel->create([
-            'cliente_id'      => $clienteId,
-            'especialidad_id' => $especialidad,
-            'descripcion'     => $descripcion,
-            'direccion'       => $direccion,
-            'fecha_servicio'  => $fecha,
-            'tipo_urgencia'   => $urgencia,
+        $creada = $incidenciaModel->create([
+            'cliente_id'        => $clienteId,
+            'especialidad_id'   => $especialidad,
+            'descripcion'       => $descripcion,
+            'direccion'         => $direccion,
+            'telefono_contacto' => $telefono,
+            'fecha_servicio'    => $fecha,
+            'tipo_urgencia'     => $urgencia,
         ]);
+
+        if (!$creada) {
+            $especialidadModel = new Especialidad();
+            $usuarioModel      = new Usuario();
+
+            $this->render('admin/create', [
+                'title'          => 'Nueva Incidencia - ReparaYa',
+                'error'          => 'No se pudo crear la incidencia.',
+                'especialidades' => $especialidadModel->getAll(),
+                'clientes'       => $usuarioModel->getClientes(),
+            ]);
+            return;
+        }
 
         header('Location: /public/admin?ok=creada');
         exit;
@@ -95,6 +121,7 @@ class AdminController extends Controller
 
         $incidenciaModel = new Incidencia();
         $incidencia = $incidenciaModel->getById($id);
+
         if (!$incidencia) {
             header('Location: /public/admin');
             exit;
@@ -103,8 +130,8 @@ class AdminController extends Controller
         $especialidadModel = new Especialidad();
 
         $this->render('admin/edit', [
-            'title'         => 'Editar Incidencia - ReparaYa',
-            'incidencia'    => $incidencia,
+            'title'          => 'Editar Incidencia - ReparaYa',
+            'incidencia'     => $incidencia,
             'especialidades' => $especialidadModel->getAll(),
         ]);
     }
@@ -120,14 +147,21 @@ class AdminController extends Controller
         }
 
         $incidenciaModel = new Incidencia();
-        $incidenciaModel->update($id, [
-            'especialidad_id' => (int) ($_POST['especialidad_id'] ?? 0),
-            'descripcion'     => trim($_POST['descripcion']       ?? ''),
-            'direccion'       => trim($_POST['direccion']          ?? ''),
-            'fecha_servicio'  => trim($_POST['fecha_servicio']     ?? ''),
-            'tipo_urgencia'   => $_POST['tipo_urgencia']           ?? 'Estandar',
-            'estado'          => $_POST['estado']                  ?? 'Pendiente',
+
+        $actualizada = $incidenciaModel->update($id, [
+            'especialidad_id'   => (int) ($_POST['especialidad_id'] ?? 0),
+            'descripcion'       => trim($_POST['descripcion'] ?? ''),
+            'direccion'         => trim($_POST['direccion'] ?? ''),
+            'telefono_contacto' => $this->normalizarTelefono($_POST['telefono_contacto'] ?? ''),
+            'fecha_servicio'    => trim($_POST['fecha_servicio'] ?? ''),
+            'tipo_urgencia'     => $this->normalizarTipoUrgencia($_POST['tipo_urgencia'] ?? 'Estandar'),
+            'estado'            => $_POST['estado'] ?? 'Pendiente',
         ]);
+
+        if (!$actualizada) {
+            header('Location: /public/admin?ok=error');
+            exit;
+        }
 
         header('Location: /public/admin?ok=actualizada');
         exit;
@@ -138,7 +172,7 @@ class AdminController extends Controller
         $this->requireAdmin();
 
         $id        = (int) ($_POST['incidencia_id'] ?? 0);
-        $tecnicoId = (int) ($_POST['tecnico_id']    ?? 0);
+        $tecnicoId = (int) ($_POST['tecnico_id'] ?? 0);
 
         if ($id > 0 && $tecnicoId > 0) {
             $incidenciaModel = new Incidencia();
@@ -156,10 +190,24 @@ class AdminController extends Controller
         $id = (int) ($_POST['id'] ?? 0);
         if ($id > 0) {
             $incidenciaModel = new Incidencia();
-            $incidenciaModel->delete($id);
+            $incidenciaModel->cancel($id);
         }
 
         header('Location: /public/admin?ok=cancelada');
+        exit;
+    }
+
+    public function destroy(): void
+    {
+        $this->requireAdmin();
+
+        $id = (int) ($_POST['id'] ?? 0);
+        if ($id > 0) {
+            $incidenciaModel = new Incidencia();
+            $incidenciaModel->deletePermanent($id);
+        }
+
+        header('Location: /public/admin?ok=eliminada');
         exit;
     }
 
@@ -168,7 +216,7 @@ class AdminController extends Controller
         $this->requireAdmin();
 
         $incidenciaModel = new Incidencia();
-        $incidencias = $incidenciaModel->getAll();
+        $incidencias = $incidenciaModel->getAll(false);
 
         $this->render('admin/calendario', [
             'title'       => 'Calendario - ReparaYa',

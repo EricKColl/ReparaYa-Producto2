@@ -122,10 +122,49 @@ class Usuario extends Model
     public function getClientes(): array
     {
         $stmt = $this->db->query("
-            SELECT id, nombre, email FROM usuarios
+            SELECT id, nombre, email, telefono
+            FROM usuarios
             WHERE rol = 'particular'
             ORDER BY nombre ASC
         ");
+
+        return $stmt->fetchAll();
+    }
+
+    public function getUsuariosTecnicosDisponibles(?int $tecnicoActualId = null): array
+    {
+        if ($tecnicoActualId !== null) {
+            $stmt = $this->db->prepare("
+                SELECT 
+                    u.id,
+                    u.nombre,
+                    u.email
+                FROM usuarios u
+                LEFT JOIN tecnicos t ON t.usuario_id = u.id
+                WHERE u.rol = 'tecnico'
+                  AND (t.id IS NULL OR t.id = :tecnico_actual_id)
+                ORDER BY u.nombre ASC
+            ");
+
+            $stmt->execute([
+                'tecnico_actual_id' => $tecnicoActualId
+            ]);
+
+            return $stmt->fetchAll();
+        }
+
+        $stmt = $this->db->query("
+            SELECT 
+                u.id,
+                u.nombre,
+                u.email
+            FROM usuarios u
+            LEFT JOIN tecnicos t ON t.usuario_id = u.id
+            WHERE u.rol = 'tecnico'
+              AND t.id IS NULL
+            ORDER BY u.nombre ASC
+        ");
+
         return $stmt->fetchAll();
     }
 }

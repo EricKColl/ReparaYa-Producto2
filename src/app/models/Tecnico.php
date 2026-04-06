@@ -9,11 +9,16 @@ class Tecnico extends Model
         $stmt = $this->db->query("
             SELECT 
                 t.id,
+                t.usuario_id,
                 t.nombre_completo,
+                t.especialidad_id,
                 t.disponible,
-                e.nombre_especialidad
+                e.nombre_especialidad,
+                u.nombre AS usuario_nombre,
+                u.email AS usuario_email
             FROM tecnicos t
             LEFT JOIN especialidades e ON t.especialidad_id = e.id
+            LEFT JOIN usuarios u ON t.usuario_id = u.id
             ORDER BY t.id ASC
         ");
 
@@ -23,7 +28,12 @@ class Tecnico extends Model
     public function getById(int $id): array|false
     {
         $stmt = $this->db->prepare("
-            SELECT id, nombre_completo, especialidad_id, disponible
+            SELECT 
+                id,
+                usuario_id,
+                nombre_completo,
+                especialidad_id,
+                disponible
             FROM tecnicos
             WHERE id = :id
         ");
@@ -35,25 +45,50 @@ class Tecnico extends Model
         return $stmt->fetch();
     }
 
-    public function create(string $nombreCompleto, int $especialidadId, int $disponible): bool
+    public function getByUsuarioId(int $usuarioId): array|false
     {
         $stmt = $this->db->prepare("
-            INSERT INTO tecnicos (nombre_completo, especialidad_id, disponible)
-            VALUES (:nombre_completo, :especialidad_id, :disponible)
+            SELECT 
+                t.id,
+                t.usuario_id,
+                t.nombre_completo,
+                t.especialidad_id,
+                t.disponible,
+                e.nombre_especialidad
+            FROM tecnicos t
+            LEFT JOIN especialidades e ON t.especialidad_id = e.id
+            WHERE t.usuario_id = :usuario_id
+            LIMIT 1
+        ");
+
+        $stmt->execute([
+            'usuario_id' => $usuarioId
+        ]);
+
+        return $stmt->fetch();
+    }
+
+    public function create(int $usuarioId, string $nombreCompleto, int $especialidadId, int $disponible): bool
+    {
+        $stmt = $this->db->prepare("
+            INSERT INTO tecnicos (usuario_id, nombre_completo, especialidad_id, disponible)
+            VALUES (:usuario_id, :nombre_completo, :especialidad_id, :disponible)
         ");
 
         return $stmt->execute([
+            'usuario_id' => $usuarioId,
             'nombre_completo' => $nombreCompleto,
             'especialidad_id' => $especialidadId,
             'disponible' => $disponible
         ]);
     }
 
-    public function update(int $id, string $nombreCompleto, int $especialidadId, int $disponible): bool
+    public function update(int $id, int $usuarioId, string $nombreCompleto, int $especialidadId, int $disponible): bool
     {
         $stmt = $this->db->prepare("
             UPDATE tecnicos
-            SET nombre_completo = :nombre_completo,
+            SET usuario_id = :usuario_id,
+                nombre_completo = :nombre_completo,
                 especialidad_id = :especialidad_id,
                 disponible = :disponible
             WHERE id = :id
@@ -61,6 +96,7 @@ class Tecnico extends Model
 
         return $stmt->execute([
             'id' => $id,
+            'usuario_id' => $usuarioId,
             'nombre_completo' => $nombreCompleto,
             'especialidad_id' => $especialidadId,
             'disponible' => $disponible
@@ -84,6 +120,7 @@ class Tecnico extends Model
         $stmt = $this->db->query("
             SELECT 
                 t.id,
+                t.usuario_id,
                 t.nombre_completo,
                 t.especialidad_id,
                 t.disponible,
@@ -102,6 +139,7 @@ class Tecnico extends Model
         $stmt = $this->db->prepare("
             SELECT 
                 t.id,
+                t.usuario_id,
                 t.nombre_completo,
                 t.especialidad_id,
                 t.disponible,

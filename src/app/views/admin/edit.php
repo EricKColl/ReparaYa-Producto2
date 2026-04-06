@@ -15,8 +15,8 @@
 
     <label>Tipo de urgencia</label>
     <select name="tipo_urgencia">
-        <option value="Estándar" <?= $incidencia['tipo_urgencia'] === 'Estándar' ? 'selected' : '' ?>>Estándar</option>
-        <option value="Urgente" <?= $incidencia['tipo_urgencia'] === 'Urgente'  ? 'selected' : '' ?>>Urgente</option>
+        <option value="Estandar" <?= $incidencia['tipo_urgencia'] === 'Estandar' ? 'selected' : '' ?>>Estándar</option>
+        <option value="Urgente" <?= $incidencia['tipo_urgencia'] === 'Urgente' ? 'selected' : '' ?>>Urgente</option>
     </select>
 
     <label>Estado</label>
@@ -27,11 +27,28 @@
     </select>
 
     <label>Fecha y hora</label>
-    <input type="datetime-local" name="fecha_servicio"
-        value="<?= date('Y-m-d\TH:i', strtotime($incidencia['fecha_servicio'])) ?>" required>
+    <input
+        type="datetime-local"
+        name="fecha_servicio"
+        value="<?= date('Y-m-d\TH:i', strtotime($incidencia['fecha_servicio'])) ?>"
+        required
+    >
 
     <label>Dirección</label>
-    <input type="text" name="direccion" value="<?= htmlspecialchars($incidencia['direccion']) ?>" required>
+    <input
+        type="text"
+        name="direccion"
+        value="<?= htmlspecialchars($incidencia['direccion']) ?>"
+        required
+    >
+
+    <label>Teléfono de contacto</label>
+    <input
+        type="text"
+        name="telefono_contacto"
+        value="<?= htmlspecialchars($incidencia['telefono_contacto']) ?>"
+        required
+    >
 
     <label>Descripción</label>
     <textarea name="descripcion" rows="4"><?= htmlspecialchars($incidencia['descripcion']) ?></textarea>
