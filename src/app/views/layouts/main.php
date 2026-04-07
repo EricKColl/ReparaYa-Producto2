@@ -488,27 +488,27 @@ $usuarioSesion = $_SESSION['usuario'] ?? null;
 
                 <div class="rp-nav-top<?= $usuarioSesion ? '' : ' is-public' ?>">
                     <nav class="rp-nav">
-                        <a href="/public">Inicio</a>
+                        <a href="<?= base_url() ?>">Inicio</a>
 
                         <?php if ($usuarioSesion): ?>
-                            <a href="/public/perfil">Mi perfil</a>
+                            <a href="<?= base_url('perfil') ?>">Mi perfil</a>
 
                             <?php if (($usuarioSesion['rol'] ?? '') === 'admin'): ?>
-                                <a href="/public/admin">Incidencias</a>
-                                <a href="/public/usuarios">Usuarios</a>
-                                <a href="/public/tecnicos">Técnicos</a>
-                                <a href="/public/especialidades">Especialidades</a>
+                                <a href="<?= base_url('admin') ?>">Incidencias</a>
+                                <a href="<?= base_url('usuarios') ?>">Usuarios</a>
+                                <a href="<?= base_url('tecnicos') ?>">Técnicos</a>
+                                <a href="<?= base_url('especialidades') ?>">Especialidades</a>
                             <?php elseif (($usuarioSesion['rol'] ?? '') === 'tecnico'): ?>
-                                <a href="/public/mi-agenda">Mi agenda</a>
+                                <a href="<?= base_url('mi-agenda') ?>">Mi agenda</a>
                             <?php elseif (($usuarioSesion['rol'] ?? '') === 'particular'): ?>
-                                <a href="/public/mis-avisos">Mis avisos</a>
-                                <a href="/public/nueva-solicitud">Nueva solicitud</a>
+                                <a href="<?= base_url('mis-avisos') ?>">Mis avisos</a>
+                                <a href="<?= base_url('nueva-solicitud') ?>">Nueva solicitud</a>
                             <?php endif; ?>
 
-                            <a href="/public/logout">Cerrar sesión</a>
+                            <a href="<?= base_url('logout') ?>">Cerrar sesión</a>
                         <?php else: ?>
-                            <a href="/public/login">Iniciar sesión</a>
-                            <a href="/public/register">Registrarse</a>
+                            <a href="<?= base_url('login') ?>">Iniciar sesión</a>
+                            <a href="<?= base_url('register') ?>">Registrarse</a>
                         <?php endif; ?>
                     </nav>
 
