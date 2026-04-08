@@ -151,7 +151,7 @@ function renderAvisoCliente(array $inc, bool $mostrarAcciones = true): void
             <?php if ($mostrarAcciones): ?>
                 <div class="cli-actions">
                     <?php if (!empty($inc['puede_cancelar'])): ?>
-                        <form action="/public/mis-avisos/cancelar" method="POST" onsubmit="return confirm('¿Seguro que quieres cancelar este aviso?');">
+                        <form action="<?= base_url('mis-avisos/cancelar') ?>" method="POST" onsubmit="return confirm('¿Seguro que quieres cancelar este aviso?');">
                             <input type="hidden" name="id" value="<?= htmlspecialchars((string) $id) ?>">
                             <button type="submit" class="cli-danger-btn">Cancelar aviso</button>
                         </form>
@@ -676,31 +676,30 @@ function renderAvisoCliente(array $inc, bool $mostrarAcciones = true): void
     .cli-history-note,
     .cli-empty {
         padding: 16px 18px;
-        border-radius: 16px;
-        line-height: 1.8;
+        border-radius: 18px;
+        font-weight: 700;
+        line-height: 1.75;
     }
 
     .cli-disabled-note {
-        background: #f8fafc;
-        border: 1px dashed #cbd5e1;
-        color: #64748b;
-        font-weight: 700;
+        background: #fff7ed;
+        border: 1px solid #fed7aa;
+        color: #9a3412;
     }
 
     .cli-history-note {
-        background: #f8fbff;
-        border: 1px solid #dbeafe;
+        background: #f1f5f9;
+        border: 1px solid #e2e8f0;
         color: #475569;
-        font-weight: 700;
     }
 
     .cli-empty {
-        background: #f8fafc;
-        border: 1px dashed #cbd5e1;
+        background: #f8fbff;
+        border: 1px solid #dbeafe;
         color: #64748b;
     }
 
-    @media (max-width: 1200px) {
+    @media (max-width: 1100px) {
         .cli-summary-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr));
         }
@@ -807,8 +806,8 @@ function renderAvisoCliente(array $inc, bool $mostrarAcciones = true): void
             </div>
 
             <div class="cli-top-actions">
-                <a href="/public/nueva-solicitud" class="cli-btn cli-btn-primary">Nueva solicitud</a>
-                <a href="/public/perfil" class="cli-btn cli-btn-secondary">Mi perfil</a>
+                <a href="<?= base_url('nueva-solicitud') ?>" class="cli-btn cli-btn-primary">Nueva solicitud</a>
+                <a href="<?= base_url('perfil') ?>" class="cli-btn cli-btn-secondary">Mi perfil</a>
             </div>
         </div>
 

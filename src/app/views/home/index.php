@@ -725,9 +725,9 @@ function homeUrgenciaClase(string $urgencia): string
             </p>
 
             <div class="home-actions">
-                <a href="/public/admin" class="home-btn home-btn-primary">Abrir incidencias</a>
-                <a href="/public/admin/calendario" class="home-btn home-btn-secondary">Ver calendario operativo</a>
-                <a href="/public/usuarios" class="home-btn home-btn-secondary">Gestionar usuarios</a>
+                <a href="<?= base_url('admin') ?>" class="home-btn home-btn-primary">Abrir incidencias</a>
+                <a href="<?= base_url('admin/calendario') ?>" class="home-btn home-btn-secondary">Ver calendario operativo</a>
+                <a href="<?= base_url('usuarios') ?>" class="home-btn home-btn-secondary">Gestionar usuarios</a>
             </div>
         </section>
 
@@ -762,21 +762,21 @@ function homeUrgenciaClase(string $urgencia): string
                 <div class="home-panel-kicker"><span class="home-dot home-dot-blue"></span>Incidencias</div>
                 <h3 class="home-panel-title">Operativa central del negocio</h3>
                 <p class="home-panel-text">Gestiona altas, estados, prioridades y técnicos desde un único punto de control más claro y eficiente.</p>
-                <a href="/public/admin" class="home-panel-link">Ir al panel de incidencias</a>
+                <a href="<?= base_url('admin') ?>" class="home-panel-link">Ir al panel de incidencias</a>
             </article>
 
             <article class="home-panel-card">
                 <div class="home-panel-kicker"><span class="home-dot home-dot-green"></span>Equipo técnico</div>
                 <h3 class="home-panel-title">Organización del personal</h3>
                 <p class="home-panel-text">Administra técnicos, disponibilidad, cuentas vinculadas y especialidades para una asignación más precisa.</p>
-                <a href="/public/tecnicos" class="home-panel-link">Gestionar técnicos</a>
+                <a href="<?= base_url('tecnicos') ?>" class="home-panel-link">Gestionar técnicos</a>
             </article>
 
             <article class="home-panel-card">
                 <div class="home-panel-kicker"><span class="home-dot home-dot-gold"></span>Estructura del negocio</div>
                 <h3 class="home-panel-title">Usuarios y catálogo de servicios</h3>
                 <p class="home-panel-text">Mantén ordenadas las cuentas de acceso y la cartera de especialidades disponibles para el servicio.</p>
-                <a href="/public/especialidades" class="home-panel-link">Ver especialidades</a>
+                <a href="<?= base_url('especialidades') ?>" class="home-panel-link">Ver especialidades</a>
             </article>
         </section>
 
@@ -790,7 +790,7 @@ function homeUrgenciaClase(string $urgencia): string
                 <?php else: ?>
                     <div class="home-list">
                         <?php foreach ($dashboard['proximas'] as $inc): ?>
-                            <a href="/public/admin" class="home-list-link">
+                            <a href="<?= base_url('admin') ?>" class="home-list-link">
                                 <div class="home-list-item">
                                     <div class="home-list-top">
                                         <span class="home-list-code"><?= htmlspecialchars($inc['localizador']) ?></span>
@@ -834,8 +834,8 @@ function homeUrgenciaClase(string $urgencia): string
             </p>
 
             <div class="home-actions">
-                <a href="/public/mi-agenda" class="home-btn home-btn-primary">Abrir mi agenda</a>
-                <a href="/public/perfil" class="home-btn home-btn-secondary">Actualizar mi perfil</a>
+                <a href="<?= base_url('mi-agenda') ?>" class="home-btn home-btn-primary">Abrir mi agenda</a>
+                <a href="<?= base_url('perfil') ?>" class="home-btn home-btn-secondary">Actualizar mi perfil</a>
             </div>
         </section>
 
@@ -882,7 +882,7 @@ function homeUrgenciaClase(string $urgencia): string
                     <?php else: ?>
                         <div class="home-list">
                             <?php foreach ($dashboard['siguientes'] as $inc): ?>
-                                <a href="/public/mi-agenda" class="home-list-link">
+                                <a href="<?= base_url('mi-agenda') ?>" class="home-list-link">
                                     <div class="home-list-item">
                                         <div class="home-list-top">
                                             <span class="home-list-code"><?= htmlspecialchars($inc['localizador']) ?></span>
@@ -927,9 +927,9 @@ function homeUrgenciaClase(string $urgencia): string
             </p>
 
             <div class="home-actions">
-                <a href="/public/nueva-solicitud" class="home-btn home-btn-primary">Crear nueva solicitud</a>
-                <a href="/public/mis-avisos" class="home-btn home-btn-secondary">Ver mis avisos</a>
-                <a href="/public/perfil" class="home-btn home-btn-secondary">Gestionar mi perfil</a>
+                <a href="<?= base_url('nueva-solicitud') ?>" class="home-btn home-btn-primary">Crear nueva solicitud</a>
+                <a href="<?= base_url('mis-avisos') ?>" class="home-btn home-btn-secondary">Ver mis avisos</a>
+                <a href="<?= base_url('perfil') ?>" class="home-btn home-btn-secondary">Gestionar mi perfil</a>
             </div>
         </section>
 
@@ -977,7 +977,7 @@ function homeUrgenciaClase(string $urgencia): string
                 <?php else: ?>
                     <div class="home-client-agenda-grid">
                         <?php foreach ($dashboard['proximos'] as $aviso): ?>
-                            <a href="/public/mis-avisos#aviso-<?= htmlspecialchars($aviso['id']) ?>" class="home-client-agenda-card">
+                            <a href="<?= base_url('mis-avisos') ?>#aviso-<?= htmlspecialchars($aviso['id']) ?>" class="home-client-agenda-card">
                                 <div class="home-client-agenda-top">
                                     <span class="home-client-agenda-code"><?= htmlspecialchars($aviso['localizador']) ?></span>
                                     <span class="home-badge <?= homeEstadoClase($aviso['estado'] ?? 'Pendiente') ?>">
@@ -1016,7 +1016,7 @@ function homeUrgenciaClase(string $urgencia): string
                 <?php else: ?>
                     <div class="home-client-recent-list">
                         <?php foreach ($dashboard['recientes'] as $aviso): ?>
-                            <a href="/public/mis-avisos#aviso-<?= htmlspecialchars($aviso['id']) ?>" class="home-client-recent-row">
+                            <a href="<?= base_url('mis-avisos') ?>#aviso-<?= htmlspecialchars($aviso['id']) ?>" class="home-client-recent-row">
                                 <div class="home-client-recent-main">
                                     <div class="home-client-recent-title"><?= htmlspecialchars($aviso['localizador']) ?></div>
                                     <div class="home-client-recent-meta">
@@ -1051,8 +1051,8 @@ function homeUrgenciaClase(string $urgencia): string
             </p>
 
             <div class="home-actions">
-                <a href="/public/login" class="home-btn home-btn-primary">Acceder a la plataforma</a>
-                <a href="/public/register" class="home-btn home-btn-secondary">Crear cuenta de cliente</a>
+                <a href="<?= base_url('login') ?>" class="home-btn home-btn-primary">Acceder a la plataforma</a>
+                <a href="<?= base_url('register') ?>" class="home-btn home-btn-secondary">Crear cuenta de cliente</a>
             </div>
         </section>
 

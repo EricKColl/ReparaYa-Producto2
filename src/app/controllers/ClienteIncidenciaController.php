@@ -111,8 +111,7 @@ class ClienteIncidenciaController extends Controller
         $this->requireParticular();
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: /public/nueva-solicitud');
-            exit;
+            $this->redirect('nueva-solicitud');
         }
 
         $especialidadId = (int) ($_POST['especialidad_id'] ?? 0);
@@ -135,8 +134,7 @@ class ClienteIncidenciaController extends Controller
         $usuario = $contexto['usuario'];
 
         if (!$usuario) {
-            header('Location: /public/logout');
-            exit;
+            $this->redirect('logout');
         }
 
         if ($especialidadId <= 0 || $fechaServicio === '' || $direccion === '' || $telefonoContacto === '' || $descripcion === '') {
@@ -208,8 +206,7 @@ class ClienteIncidenciaController extends Controller
             return;
         }
 
-        header('Location: /public/mis-avisos?ok=creada');
-        exit;
+        $this->redirect('mis-avisos?ok=creada');
     }
 
     public function cancel(): void
@@ -217,15 +214,13 @@ class ClienteIncidenciaController extends Controller
         $this->requireParticular();
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: /public/mis-avisos');
-            exit;
+            $this->redirect('mis-avisos');
         }
 
         $id = (int) ($_POST['id'] ?? 0);
 
         if ($id <= 0) {
-            header('Location: /public/mis-avisos?error=aviso_invalido');
-            exit;
+            $this->redirect('mis-avisos?error=aviso_invalido');
         }
 
         $clienteId = (int) $_SESSION['usuario']['id'];
@@ -234,23 +229,19 @@ class ClienteIncidenciaController extends Controller
         $incidencia = $incidenciaModel->getByIdAndClienteId($id, $clienteId);
 
         if (!$incidencia) {
-            header('Location: /public/mis-avisos?error=aviso_no_encontrado');
-            exit;
+            $this->redirect('mis-avisos?error=aviso_no_encontrado');
         }
 
         if (!$this->puedeCancelar($incidencia)) {
-            header('Location: /public/mis-avisos?error=fuera_de_plazo');
-            exit;
+            $this->redirect('mis-avisos?error=fuera_de_plazo');
         }
 
         $cancelada = $incidenciaModel->cancel($id);
 
         if (!$cancelada) {
-            header('Location: /public/mis-avisos?error=cancelacion_fallida');
-            exit;
+            $this->redirect('mis-avisos?error=cancelacion_fallida');
         }
 
-        header('Location: /public/mis-avisos?ok=cancelada');
-        exit;
+        $this->redirect('mis-avisos?ok=cancelada');
     }
 }

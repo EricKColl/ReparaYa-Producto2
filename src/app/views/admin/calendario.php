@@ -295,8 +295,8 @@
         </p>
 
         <div class="cal-top-actions">
-            <a href="/public/admin" class="cal-btn cal-btn-secondary">Volver al panel</a>
-            <a href="/public/admin/create" class="cal-btn cal-btn-primary">Nueva incidencia</a>
+            <a href="<?= base_url('admin') ?>" class="cal-btn cal-btn-secondary">Volver al panel</a>
+            <a href="<?= base_url('admin/create') ?>" class="cal-btn cal-btn-primary">Nueva incidencia</a>
         </div>
     </section>
 

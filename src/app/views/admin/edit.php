@@ -1,7 +1,7 @@
-<a href="/public/admin" class="top-link">← Volver al panel</a>
+<a href="<?= base_url('admin') ?>" class="top-link">← Volver al panel</a>
 <h2>Editar Incidencia <small style="font-size:1.2rem;color:#64748b;"><?= htmlspecialchars($incidencia['localizador']) ?></small></h2>
 
-<form action="/public/admin/update" method="POST">
+<form action="<?= base_url('admin/update') ?>" method="POST">
     <input type="hidden" name="id" value="<?= $incidencia['id'] ?>">
 
     <label>Especialidad</label>

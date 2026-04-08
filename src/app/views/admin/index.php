@@ -17,8 +17,8 @@
 <?php endif; ?>
 
 <p>
-    <a href="/public/admin/create" class="top-link">+ Nueva incidencia</a>
-    <a href="/public/admin/calendario" class="top-link" style="margin-left:10px">📅 Calendario</a>
+    <a href="<?= base_url('admin/create') ?>" class="top-link">+ Nueva incidencia</a>
+    <a href="<?= base_url('admin/calendario') ?>" class="top-link" style="margin-left:10px">📅 Calendario</a>
 </p>
 
 <table style="width:100%;border-collapse:collapse;font-size:1rem;">
@@ -82,7 +82,7 @@
                 <td style="padding:6px 12px;">
                     <?php if ($inc['estado'] !== 'Cancelada' && $inc['estado'] !== 'Finalizada'): ?>
                         <?php $tecnicosDisp = $tecnicosPorEspecialidad[$inc['especialidad_id']] ?? []; ?>
-                        <form action="/public/admin/asignar" method="POST" style="display:flex;gap:6px;align-items:center;">
+                        <form action="<?= base_url('admin/asignar') ?>" method="POST" style="display:flex;gap:6px;align-items:center;">
                             <input type="hidden" name="incidencia_id" value="<?= $inc['id'] ?>">
                             <select name="tecnico_id" style="margin:0;padding:6px 10px;font-size:0.9rem;width:auto;max-width:200px;">
                                 <option value="">— Sin asignar —</option>
@@ -110,10 +110,10 @@
                 </td>
 
                 <td style="padding:10px 12px; white-space:nowrap;">
-                    <a href="/public/admin/edit?id=<?= $inc['id'] ?>" class="action-link" style="margin-right:10px;">Editar</a>
+                    <a href="<?= base_url('admin/edit') ?>?id=<?= urlencode($inc['id']) ?>" class="action-link" style="margin-right:10px;">Editar</a>
 
                     <?php if ($inc['estado'] !== 'Cancelada'): ?>
-                        <form action="/public/admin/delete" method="POST" class="inline-form"
+                        <form action="<?= base_url('admin/delete') ?>" method="POST" class="inline-form"
                               onsubmit="return confirm('¿Cancelar esta incidencia?')"
                               style="display:inline-block;margin-right:8px;">
                             <input type="hidden" name="id" value="<?= $inc['id'] ?>">
@@ -123,7 +123,7 @@
                         <span style="display:inline-block;margin-right:10px;color:#b91c1c;font-weight:700;">Ya cancelada</span>
                     <?php endif; ?>
 
-                    <form action="/public/admin/destroy" method="POST" class="inline-form"
+                    <form action="<?= base_url('admin/destroy') ?>" method="POST" class="inline-form"
                           onsubmit="return confirm('¿Eliminar definitivamente esta incidencia? Esta acción no se puede deshacer.')"
                           style="display:inline-block;">
                         <input type="hidden" name="id" value="<?= $inc['id'] ?>">

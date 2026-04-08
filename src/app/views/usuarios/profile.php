@@ -18,7 +18,7 @@
     </div>
 <?php endif; ?>
 
-<form action="/public/perfil/update" method="POST" autocomplete="off">
+<form action="<?= base_url('perfil/update') ?>" method="POST" autocomplete="off">
     <div>
         <label for="nombre">Nombre:</label><br>
         <input type="text" id="nombre" name="nombre" value="<?= htmlspecialchars($usuario['nombre']) ?>" required>

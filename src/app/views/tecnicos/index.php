@@ -208,7 +208,7 @@
         </p>
     </div>
 
-    <a class="tec-create-btn" href="/public/tecnicos/create">+ Nuevo técnico</a>
+    <a class="tec-create-btn" href="<?= base_url('tecnicos/create') ?>">+ Nuevo técnico</a>
 </div>
 
 <?php if (isset($_GET['ok']) && $_GET['ok'] === 'creado'): ?>
@@ -260,9 +260,9 @@
                 </div>
 
                 <div class="tec-actions">
-                    <a href="/public/tecnicos/edit?id=<?= htmlspecialchars($tecnico['id']) ?>">Editar</a>
+                    <a href="<?= base_url('tecnicos/edit') ?>?id=<?= urlencode($tecnico['id']) ?>">Editar</a>
 
-                    <form class="inline-form" action="/public/tecnicos/delete" method="POST">
+                    <form class="inline-form" action="<?= base_url('tecnicos/delete') ?>" method="POST">
                         <input type="hidden" name="id" value="<?= htmlspecialchars($tecnico['id']) ?>">
                         <button type="submit" onclick="return confirm('¿Seguro que quieres eliminar este técnico?');">
                             Eliminar

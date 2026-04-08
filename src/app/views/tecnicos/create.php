@@ -1,4 +1,4 @@
-<a href="/public/tecnicos" class="top-link">← Volver al listado</a>
+<a href="<?= base_url('tecnicos') ?>" class="top-link">← Volver al listado</a>
 <h2>Crear técnico</h2>
 
 <?php if (!empty($error)): ?>
@@ -11,7 +11,7 @@
     </p>
 <?php endif; ?>
 
-<form action="/public/tecnicos/store" method="POST">
+<form action="<?= base_url('tecnicos/store') ?>" method="POST">
     <div>
         <label for="usuario_id">Cuenta de usuario técnico</label>
         <select id="usuario_id" name="usuario_id" required>

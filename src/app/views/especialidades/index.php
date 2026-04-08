@@ -144,7 +144,7 @@
         </p>
     </div>
 
-    <a class="esp-create-btn" href="/public/especialidades/create">+ Nueva especialidad</a>
+    <a class="esp-create-btn" href="<?= base_url('especialidades/create') ?>">+ Nueva especialidad</a>
 </div>
 
 <?php if (isset($_GET['ok']) && $_GET['ok'] === 'creada'): ?>
@@ -175,9 +175,9 @@
                 <p>Especialidad registrada en la estructura técnica del sistema.</p>
 
                 <div class="esp-actions">
-                    <a href="/public/especialidades/edit?id=<?= htmlspecialchars($especialidad['id']) ?>">Editar</a>
+                    <a href="<?= base_url('especialidades/edit') ?>?id=<?= urlencode($especialidad['id']) ?>">Editar</a>
 
-                    <form class="inline-form" action="/public/especialidades/delete" method="POST">
+                    <form class="inline-form" action="<?= base_url('especialidades/delete') ?>" method="POST">
                         <input type="hidden" name="id" value="<?= htmlspecialchars($especialidad['id']) ?>">
                         <button type="submit" onclick="return confirm('¿Seguro que quieres eliminar esta especialidad?');">
                             Eliminar

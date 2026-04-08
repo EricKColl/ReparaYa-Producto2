@@ -10,7 +10,7 @@
     </div>
 <?php endif; ?>
 
-<form action="/public/login" method="POST" autocomplete="off">
+<form action="<?= base_url('login') ?>" method="POST" autocomplete="off">
     <div>
         <label for="email">Email:</label><br>
         <input type="email" id="email" name="email" required autocomplete="off">
@@ -30,5 +30,5 @@
 
 <br>
 
-<p><a href="/public/register">¿No tienes cuenta? Regístrate aquí</a></p>
-<p><a href="/public">Volver al inicio</a></p>
+<p><a href="<?= base_url('register') ?>">¿No tienes cuenta? Regístrate aquí</a></p>
+<p><a href="<?= base_url() ?>">Volver al inicio</a></p>

@@ -40,8 +40,7 @@ class TecnicoController extends Controller
         $this->requireAdmin();
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: /public/tecnicos');
-            exit;
+            $this->redirect('tecnicos');
         }
 
         $usuarioId = (int) ($_POST['usuario_id'] ?? 0);
@@ -66,8 +65,7 @@ class TecnicoController extends Controller
 
         try {
             $tecnicoModel->create($usuarioId, $nombreCompleto, $especialidadId, $disponible);
-            header('Location: /public/tecnicos?ok=creado');
-            exit;
+            $this->redirect('tecnicos?ok=creado');
         } catch (PDOException $e) {
             $especialidadModel = new Especialidad();
             $usuarioModel = new Usuario();
@@ -89,16 +87,14 @@ class TecnicoController extends Controller
         $id = (int) ($_GET['id'] ?? 0);
 
         if ($id <= 0) {
-            header('Location: /public/tecnicos');
-            exit;
+            $this->redirect('tecnicos');
         }
 
         $tecnicoModel = new Tecnico();
         $tecnico = $tecnicoModel->getById($id);
 
         if (!$tecnico) {
-            header('Location: /public/tecnicos');
-            exit;
+            $this->redirect('tecnicos');
         }
 
         $especialidadModel = new Especialidad();
@@ -117,8 +113,7 @@ class TecnicoController extends Controller
         $this->requireAdmin();
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: /public/tecnicos');
-            exit;
+            $this->redirect('tecnicos');
         }
 
         $id = (int) ($_POST['id'] ?? 0);
@@ -128,8 +123,7 @@ class TecnicoController extends Controller
         $disponible = isset($_POST['disponible']) ? 1 : 0;
 
         if ($id <= 0) {
-            header('Location: /public/tecnicos');
-            exit;
+            $this->redirect('tecnicos');
         }
 
         if ($usuarioId <= 0 || $nombreCompleto === '' || $especialidadId <= 0) {
@@ -160,8 +154,7 @@ class TecnicoController extends Controller
 
         try {
             $tecnicoModel->update($id, $usuarioId, $nombreCompleto, $especialidadId, $disponible);
-            header('Location: /public/tecnicos?ok=actualizado');
-            exit;
+            $this->redirect('tecnicos?ok=actualizado');
         } catch (PDOException $e) {
             $tecnico = $tecnicoModel->getById($id);
 
@@ -191,26 +184,22 @@ class TecnicoController extends Controller
         $this->requireAdmin();
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: /public/tecnicos');
-            exit;
+            $this->redirect('tecnicos');
         }
 
         $id = (int) ($_POST['id'] ?? 0);
 
         if ($id <= 0) {
-            header('Location: /public/tecnicos');
-            exit;
+            $this->redirect('tecnicos');
         }
 
         $tecnicoModel = new Tecnico();
 
         try {
             $tecnicoModel->delete($id);
-            header('Location: /public/tecnicos?ok=eliminado');
-            exit;
+            $this->redirect('tecnicos?ok=eliminado');
         } catch (PDOException $e) {
-            header('Location: /public/tecnicos?error=en_uso');
-            exit;
+            $this->redirect('tecnicos?error=en_uso');
         }
     }
 

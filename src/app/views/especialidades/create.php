@@ -4,7 +4,7 @@
     <p><?= htmlspecialchars($error) ?></p>
 <?php endif; ?>
 
-<form action="/public/especialidades/store" method="POST">
+<form action="<?= base_url('especialidades/store') ?>" method="POST">
     <div>
         <label for="nombre_especialidad">Nombre de la especialidad:</label>
         <input type="text" id="nombre_especialidad" name="nombre_especialidad">
@@ -17,4 +17,4 @@
 
 <br>
 
-<a href="/public/especialidades">Volver al listado</a>
+<a href="<?= base_url('especialidades') ?>">Volver al listado</a>

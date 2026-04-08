@@ -1,11 +1,11 @@
-<a href="/public/admin" class="top-link">← Volver al panel</a>
+<a href="<?= base_url('admin') ?>" class="top-link">← Volver al panel</a>
 <h2>Nueva Incidencia</h2>
 
 <?php if (isset($error)): ?>
     <p class="message-error"><?= htmlspecialchars($error) ?></p>
 <?php endif; ?>
 
-<form action="/public/admin/store" method="POST" style="max-width:680px;">
+<form action="<?= base_url('admin/store') ?>" method="POST" style="max-width:680px;">
 
     <label>Cliente</label>
     <select id="cliente_id" name="cliente_id" required style="max-width:100%;">

@@ -4,7 +4,7 @@
     <p><?= htmlspecialchars($error) ?></p>
 <?php endif; ?>
 
-<form action="/public/especialidades/update" method="POST">
+<form action="<?= base_url('especialidades/update') ?>" method="POST">
     <input type="hidden" name="id" value="<?= htmlspecialchars($especialidad['id']) ?>">
 
     <div>
@@ -24,4 +24,4 @@
 
 <br>
 
-<a href="/public/especialidades">Volver al listado</a>
+<a href="<?= base_url('especialidades') ?>">Volver al listado</a>

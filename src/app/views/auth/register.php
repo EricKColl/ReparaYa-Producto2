@@ -12,7 +12,7 @@
     </div>
 <?php endif; ?>
 
-<form action="/public/register" method="POST" autocomplete="off">
+<form action="<?= base_url('register') ?>" method="POST" autocomplete="off">
     <div>
         <label for="nombre">Nombre:</label><br>
         <input type="text" id="nombre" name="nombre" required>
@@ -46,4 +46,5 @@
 
 <br>
 
-<a href="/public/login">Ir al login</a>
+<p><a href="<?= base_url('login') ?>">Ir al login</a></p>
+<p><a href="<?= base_url() ?>">Volver al inicio</a></p>

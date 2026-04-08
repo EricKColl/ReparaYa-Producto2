@@ -1,11 +1,11 @@
-<a href="/public/tecnicos" class="top-link">← Volver al listado</a>
+<a href="<?= base_url('tecnicos') ?>" class="top-link">← Volver al listado</a>
 <h2>Editar técnico</h2>
 
 <?php if (!empty($error)): ?>
     <p class="message-error"><?= htmlspecialchars($error) ?></p>
 <?php endif; ?>
 
-<form action="/public/tecnicos/update" method="POST">
+<form action="<?= base_url('tecnicos/update') ?>" method="POST">
     <input type="hidden" name="id" value="<?= htmlspecialchars($tecnico['id']) ?>">
 
     <div>

@@ -13,11 +13,20 @@ class Controller
         require __DIR__ . '/../app/views/layouts/main.php';
     }
 
+    protected function url(string $path = ''): string
+    {
+        return base_url($path);
+    }
+
+    protected function redirect(string $path = ''): void
+    {
+        redirect_to($path);
+    }
+
     protected function requireLogin(): void
     {
         if (!isset($_SESSION['usuario'])) {
-            header('Location: /public/login');
-            exit;
+            $this->redirect('login');
         }
     }
 
@@ -26,8 +35,7 @@ class Controller
         $this->requireLogin();
 
         if (($_SESSION['usuario']['rol'] ?? '') !== 'admin') {
-            header('Location: /public');
-            exit;
+            $this->redirect();
         }
     }
 
@@ -36,8 +44,7 @@ class Controller
         $this->requireLogin();
 
         if (($_SESSION['usuario']['rol'] ?? '') !== 'tecnico') {
-            header('Location: /public');
-            exit;
+            $this->redirect();
         }
     }
 
@@ -46,16 +53,14 @@ class Controller
         $this->requireLogin();
 
         if (($_SESSION['usuario']['rol'] ?? '') !== 'particular') {
-            header('Location: /public');
-            exit;
+            $this->redirect();
         }
     }
 
     protected function redirectIfLoggedIn(): void
     {
         if (isset($_SESSION['usuario'])) {
-            header('Location: /public');
-            exit;
+            $this->redirect();
         }
     }
 }

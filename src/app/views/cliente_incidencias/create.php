@@ -501,7 +501,7 @@ $tipoSeleccionado = $old['tipo_urgencia'] ?? 'Estandar';
             Regla activa del sistema: las solicitudes de tipo <strong>Estándar</strong> deben registrarse con al menos <strong>48 horas de antelación</strong>. Además, ningún aviso podrá cancelarse si faltan menos de 48 horas para la fecha del servicio.
         </div>
 
-        <form action="/public/nueva-solicitud/store" method="POST" class="cli-request-form">
+        <form action="<?= base_url('nueva-solicitud/store') ?>" method="POST" class="cli-request-form">
             <div class="cli-request-grid">
                 <div class="cli-field cli-col-6">
                     <label for="especialidad_id">Tipo de servicio / especialidad</label>
@@ -601,7 +601,7 @@ $tipoSeleccionado = $old['tipo_urgencia'] ?? 'Estandar';
 
             <div class="cli-form-actions">
                 <button type="submit" class="cli-primary-btn">Registrar solicitud</button>
-                <a href="/public/mis-avisos" class="cli-secondary-link">Ir a Mis avisos</a>
+                <a href="<?= base_url('mis-avisos') ?>" class="cli-secondary-link">Ir a Mis avisos</a>
             </div>
         </form>
     </section>

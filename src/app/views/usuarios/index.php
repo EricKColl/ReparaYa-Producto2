@@ -177,7 +177,7 @@
         </p>
     </div>
 
-    <a class="usr-create-btn" href="/public/usuarios/create">+ Crear nuevo usuario</a>
+    <a class="usr-create-btn" href="<?= base_url('usuarios/create') ?>">+ Crear nuevo usuario</a>
 </div>
 
 <?php if (empty($usuarios)): ?>
@@ -217,9 +217,9 @@
                         <td><?= htmlspecialchars($usuario['created_at']) ?></td>
                         <td>
                             <div class="usr-actions">
-                                <a href="/public/usuarios/edit?id=<?= urlencode($usuario['id']) ?>">Editar</a>
+                                <a href="<?= base_url('usuarios/edit') ?>?id=<?= urlencode($usuario['id']) ?>">Editar</a>
 
-                                <form class="inline-form" action="/public/usuarios/delete" method="POST">
+                                <form class="inline-form" action="<?= base_url('usuarios/delete') ?>" method="POST">
                                     <input type="hidden" name="id" value="<?= htmlspecialchars($usuario['id']) ?>">
                                     <button type="submit" onclick="return confirm('¿Seguro que quieres eliminar este usuario?');">
                                         Eliminar

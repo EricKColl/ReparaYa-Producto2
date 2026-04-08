@@ -12,7 +12,7 @@
     </div>
 <?php endif; ?>
 
-<form action="/public/usuarios/store" method="POST" autocomplete="off">
+<form action="<?= base_url('usuarios/store') ?>" method="POST" autocomplete="off">
     <div>
         <label for="nombre">Nombre:</label><br>
         <input type="text" id="nombre" name="nombre" required>
@@ -57,4 +57,4 @@
 
 <br>
 
-<a href="/public/usuarios">Volver al listado</a>
+<a href="<?= base_url('usuarios') ?>">Volver al listado</a>

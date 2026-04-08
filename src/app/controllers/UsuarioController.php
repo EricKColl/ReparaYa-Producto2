@@ -32,8 +32,7 @@ class UsuarioController extends Controller
         $this->requireAdmin();
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: /public/usuarios');
-            exit;
+            $this->redirect('usuarios');
         }
 
         $usuarioModel = new Usuario();
@@ -47,28 +46,24 @@ class UsuarioController extends Controller
         ];
 
         if ($data['nombre'] === '' || $data['email'] === '' || $data['password'] === '') {
-            header('Location: /public/usuarios/create?error=campos_vacios');
-            exit;
+            $this->redirect('usuarios/create?error=campos_vacios');
         }
 
         if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-            header('Location: /public/usuarios/create?error=email_invalido');
-            exit;
+            $this->redirect('usuarios/create?error=email_invalido');
         }
 
         $emailExistente = $usuarioModel->getByEmail($data['email']);
 
         if ($emailExistente) {
-            header('Location: /public/usuarios/create?error=email_duplicado');
-            exit;
+            $this->redirect('usuarios/create?error=email_duplicado');
         }
 
         $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
 
         $usuarioModel->create($data);
 
-        header('Location: /public/usuarios');
-        exit;
+        $this->redirect('usuarios');
     }
 
     public function edit(): void
@@ -78,16 +73,14 @@ class UsuarioController extends Controller
         $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 
         if ($id <= 0) {
-            header('Location: /public/usuarios');
-            exit;
+            $this->redirect('usuarios');
         }
 
         $usuarioModel = new Usuario();
         $usuario = $usuarioModel->getById($id);
 
         if (!$usuario) {
-            header('Location: /public/usuarios');
-            exit;
+            $this->redirect('usuarios');
         }
 
         $this->render('usuarios/edit', [
@@ -101,23 +94,20 @@ class UsuarioController extends Controller
         $this->requireAdmin();
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: /public/usuarios');
-            exit;
+            $this->redirect('usuarios');
         }
 
         $id = isset($_POST['id']) ? (int) $_POST['id'] : 0;
 
         if ($id <= 0) {
-            header('Location: /public/usuarios');
-            exit;
+            $this->redirect('usuarios');
         }
 
         $usuarioModel = new Usuario();
         $usuarioActual = $usuarioModel->getById($id);
 
         if (!$usuarioActual) {
-            header('Location: /public/usuarios');
-            exit;
+            $this->redirect('usuarios');
         }
 
         $data = [
@@ -129,20 +119,17 @@ class UsuarioController extends Controller
         ];
 
         if ($data['nombre'] === '' || $data['email'] === '') {
-            header('Location: /public/usuarios/edit?id=' . $id . '&error=campos_vacios');
-            exit;
+            $this->redirect('usuarios/edit?id=' . $id . '&error=campos_vacios');
         }
 
         if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-            header('Location: /public/usuarios/edit?id=' . $id . '&error=email_invalido');
-            exit;
+            $this->redirect('usuarios/edit?id=' . $id . '&error=email_invalido');
         }
 
         $emailExistente = $usuarioModel->getByEmailExcludingId($data['email'], $id);
 
         if ($emailExistente) {
-            header('Location: /public/usuarios/edit?id=' . $id . '&error=email_duplicado');
-            exit;
+            $this->redirect('usuarios/edit?id=' . $id . '&error=email_duplicado');
         }
 
         if ($data['password'] === '') {
@@ -153,8 +140,7 @@ class UsuarioController extends Controller
 
         $usuarioModel->update($id, $data);
 
-        header('Location: /public/usuarios');
-        exit;
+        $this->redirect('usuarios');
     }
 
     public function delete(): void
@@ -162,22 +148,19 @@ class UsuarioController extends Controller
         $this->requireAdmin();
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: /public/usuarios');
-            exit;
+            $this->redirect('usuarios');
         }
 
         $id = isset($_POST['id']) ? (int) $_POST['id'] : 0;
 
         if ($id <= 0) {
-            header('Location: /public/usuarios');
-            exit;
+            $this->redirect('usuarios');
         }
 
         $usuarioModel = new Usuario();
         $usuarioModel->delete($id);
 
-        header('Location: /public/usuarios');
-        exit;
+        $this->redirect('usuarios');
     }
 
     public function loginForm(): void
@@ -194,24 +177,21 @@ class UsuarioController extends Controller
         $this->redirectIfLoggedIn();
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: /public/login');
-            exit;
+            $this->redirect('login');
         }
 
         $email = trim($_POST['email'] ?? '');
         $password = trim($_POST['password'] ?? '');
 
         if ($email === '' || $password === '') {
-            header('Location: /public/login?error=campos_vacios');
-            exit;
+            $this->redirect('login?error=campos_vacios');
         }
 
         $usuarioModel = new Usuario();
         $usuario = $usuarioModel->getByEmail($email);
 
         if (!$usuario || !password_verify($password, $usuario['password'])) {
-            header('Location: /public/login?error=credenciales_invalidas');
-            exit;
+            $this->redirect('login?error=credenciales_invalidas');
         }
 
         $_SESSION['usuario'] = [
@@ -221,8 +201,7 @@ class UsuarioController extends Controller
             'rol' => $usuario['rol']
         ];
 
-        header('Location: /public');
-        exit;
+        $this->redirect();
     }
 
     public function logout(): void
@@ -230,8 +209,7 @@ class UsuarioController extends Controller
         unset($_SESSION['usuario']);
         session_destroy();
 
-        header('Location: /public/login');
-        exit;
+        $this->redirect('login');
     }
 
     public function profile(): void
@@ -242,8 +220,7 @@ class UsuarioController extends Controller
         $usuario = $usuarioModel->getById((int) $_SESSION['usuario']['id']);
 
         if (!$usuario) {
-            header('Location: /public/logout');
-            exit;
+            $this->redirect('logout');
         }
 
         $this->render('usuarios/profile', [
@@ -257,8 +234,7 @@ class UsuarioController extends Controller
         $this->requireLogin();
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: /public/perfil');
-            exit;
+            $this->redirect('perfil');
         }
 
         $id = (int) $_SESSION['usuario']['id'];
@@ -267,8 +243,7 @@ class UsuarioController extends Controller
         $usuarioActual = $usuarioModel->getById($id);
 
         if (!$usuarioActual) {
-            header('Location: /public/logout');
-            exit;
+            $this->redirect('logout');
         }
 
         $data = [
@@ -280,20 +255,17 @@ class UsuarioController extends Controller
         ];
 
         if ($data['nombre'] === '' || $data['email'] === '') {
-            header('Location: /public/perfil?error=campos_vacios');
-            exit;
+            $this->redirect('perfil?error=campos_vacios');
         }
 
         if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-            header('Location: /public/perfil?error=email_invalido');
-            exit;
+            $this->redirect('perfil?error=email_invalido');
         }
 
         $emailExistente = $usuarioModel->getByEmailExcludingId($data['email'], $id);
 
         if ($emailExistente) {
-            header('Location: /public/perfil?error=email_duplicado');
-            exit;
+            $this->redirect('perfil?error=email_duplicado');
         }
 
         if ($data['password'] === '') {
@@ -307,8 +279,7 @@ class UsuarioController extends Controller
         $_SESSION['usuario']['nombre'] = $data['nombre'];
         $_SESSION['usuario']['email'] = $data['email'];
 
-        header('Location: /public/perfil?ok=perfil_actualizado');
-        exit;
+        $this->redirect('perfil?ok=perfil_actualizado');
     }
 
     public function registerForm(): void
@@ -325,8 +296,7 @@ class UsuarioController extends Controller
         $this->redirectIfLoggedIn();
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: /public/register');
-            exit;
+            $this->redirect('register');
         }
 
         $usuarioModel = new Usuario();
@@ -340,27 +310,23 @@ class UsuarioController extends Controller
         ];
 
         if ($data['nombre'] === '' || $data['email'] === '' || $data['password'] === '') {
-            header('Location: /public/register?error=campos_vacios');
-            exit;
+            $this->redirect('register?error=campos_vacios');
         }
 
         if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-            header('Location: /public/register?error=email_invalido');
-            exit;
+            $this->redirect('register?error=email_invalido');
         }
 
         $emailExistente = $usuarioModel->getByEmail($data['email']);
 
         if ($emailExistente) {
-            header('Location: /public/register?error=email_duplicado');
-            exit;
+            $this->redirect('register?error=email_duplicado');
         }
 
         $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
 
         $usuarioModel->create($data);
 
-        header('Location: /public/login');
-        exit;
+        $this->redirect('login');
     }
 }

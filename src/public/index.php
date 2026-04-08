@@ -23,10 +23,15 @@ if (!function_exists('base_url')) {
 }
 
 if (!function_exists('redirect_to')) {
-    function redirect_to(string $path): void
+    function redirect_to(string $path = ''): void
     {
         $config = require __DIR__ . '/../config/app.php';
         $base = rtrim($config['base_url'] ?? '/public', '/');
+
+        if ($path === '') {
+            header('Location: ' . $base);
+            exit;
+        }
 
         if (strpos($path, '/public') === 0) {
             $path = $base . substr($path, strlen('/public'));
