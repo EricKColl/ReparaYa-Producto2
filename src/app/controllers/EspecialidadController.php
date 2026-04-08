@@ -13,7 +13,7 @@ class EspecialidadController extends Controller
         $especialidades = $especialidadModel->getAll();
 
         $this->render('especialidades/index', [
-            'title' => 'Especialidades - ReparaYa',
+            'title' => 'Listado de especialidades - ReparaYa',
             'especialidades' => $especialidades
         ]);
     }
@@ -23,7 +23,7 @@ class EspecialidadController extends Controller
         $this->requireAdmin();
 
         $this->render('especialidades/create', [
-            'title' => 'Nueva especialidad - ReparaYa'
+            'title' => 'Crear especialidad - ReparaYa'
         ]);
     }
 
@@ -35,20 +35,18 @@ class EspecialidadController extends Controller
             $this->redirect('especialidades');
         }
 
-        $nombre = trim($_POST['nombre_especialidad'] ?? '');
+        $nombreEspecialidad = trim($_POST['nombre_especialidad'] ?? '');
 
-        if ($nombre === '') {
+        if ($nombreEspecialidad === '') {
             $this->render('especialidades/create', [
-                'title' => 'Nueva especialidad - ReparaYa',
+                'title' => 'Crear especialidad - ReparaYa',
                 'error' => 'El nombre de la especialidad es obligatorio.'
             ]);
             return;
         }
 
         $especialidadModel = new Especialidad();
-        $especialidadModel->create([
-            'nombre_especialidad' => $nombre
-        ]);
+        $especialidadModel->create($nombreEspecialidad);
 
         $this->redirect('especialidades?ok=creada');
     }
@@ -57,7 +55,7 @@ class EspecialidadController extends Controller
     {
         $this->requireAdmin();
 
-        $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+        $id = (int) ($_GET['id'] ?? 0);
 
         if ($id <= 0) {
             $this->redirect('especialidades');
@@ -84,14 +82,14 @@ class EspecialidadController extends Controller
             $this->redirect('especialidades');
         }
 
-        $id = isset($_POST['id']) ? (int) $_POST['id'] : 0;
-        $nombre = trim($_POST['nombre_especialidad'] ?? '');
+        $id = (int) ($_POST['id'] ?? 0);
+        $nombreEspecialidad = trim($_POST['nombre_especialidad'] ?? '');
 
         if ($id <= 0) {
             $this->redirect('especialidades');
         }
 
-        if ($nombre === '') {
+        if ($nombreEspecialidad === '') {
             $especialidadModel = new Especialidad();
             $especialidad = $especialidadModel->getById($id);
 
@@ -101,16 +99,14 @@ class EspecialidadController extends Controller
 
             $this->render('especialidades/edit', [
                 'title' => 'Editar especialidad - ReparaYa',
-                'especialidad' => $especialidad,
-                'error' => 'El nombre de la especialidad es obligatorio.'
+                'error' => 'El nombre de la especialidad es obligatorio.',
+                'especialidad' => $especialidad
             ]);
             return;
         }
 
         $especialidadModel = new Especialidad();
-        $especialidadModel->update($id, [
-            'nombre_especialidad' => $nombre
-        ]);
+        $especialidadModel->update($id, $nombreEspecialidad);
 
         $this->redirect('especialidades?ok=actualizada');
     }
@@ -123,7 +119,7 @@ class EspecialidadController extends Controller
             $this->redirect('especialidades');
         }
 
-        $id = isset($_POST['id']) ? (int) $_POST['id'] : 0;
+        $id = (int) ($_POST['id'] ?? 0);
 
         if ($id <= 0) {
             $this->redirect('especialidades');
